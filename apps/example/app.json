@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Peripheral Example",
+    "slug": "peripheral-example",
+    "version": "1.0.0",
+    "scheme": "peripheral-example",
+    "newArchEnabled": true,
+    "platforms": ["ios", "android"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.peripheral.example",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "This app uses Bluetooth to connect to BLE sensors for gesture recognition and device control.",
+        "UIBackgroundModes": ["bluetooth-central"]
+      }
+    },
+    "android": {
+      "package": "com.peripheral.example",
+      "permissions": [
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "react-native-ble-manager",
+        {
+          "isBackgroundEnabled": true,
+          "modes": ["peripheral", "central"],
+          "bluetoothAlwaysPermission": "This app uses Bluetooth to connect to BLE sensors."
+        }
+      ]
+    ]
+  }
+}

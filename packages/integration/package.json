@@ -1,7 +1,7 @@
 {
-  "name": "@peripheral/ble-core",
+  "name": "@peripheral/integration",
   "version": "0.1.0",
-  "description": "React Native BLE peripheral management with typed GATT parsers, auto-reconnection, and React hooks",
+  "description": "Glue layer connecting BLE sensors → gesture recognition → smart home actions",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "types": "lib/typescript/commonjs/src/index.d.ts",
@@ -38,57 +38,56 @@
   "keywords": [
     "react-native",
     "ble",
-    "bluetooth",
-    "gatt",
-    "peripheral",
+    "gesture",
     "smart-home",
-    "wearable",
-    "heart-rate",
-    "ftms",
-    "expo"
+    "integration",
+    "imu",
+    "home-assistant",
+    "peripheral"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/peripheral/peripheral.git",
-    "directory": "packages/ble-core"
+    "directory": "packages/integration"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-native": ">=0.73.0",
-    "react-native-ble-manager": ">=11.0.0"
+    "@peripheral/ble-core": ">=0.1.0",
+    "@peripheral/gesture-engine": ">=0.1.0",
+    "@peripheral/smart-home": ">=0.1.0"
   },
   "peerDependenciesMeta": {
-    "react-native-ble-manager": {
-      "optional": false
+    "@peripheral/ble-core": {
+      "optional": true
+    },
+    "@peripheral/gesture-engine": {
+      "optional": true
+    },
+    "@peripheral/smart-home": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@peripheral/ble-core": "workspace:*",
+    "@peripheral/gesture-engine": "workspace:*",
+    "@peripheral/smart-home": "workspace:*",
     "@peripheral/typescript-config": "workspace:*",
     "@types/react": "^19.2.13",
-    "jest": "^30.2.0",
     "react": "^19.2.4",
     "react-native": "^0.83.1",
     "react-native-ble-manager": "^12.4.4",
     "react-native-builder-bob": "^0.40.17",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "jest": "^30.2.0"
   },
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
     "targets": [
-      [
-        "module",
-        {
-          "esm": true
-        }
-      ],
-      [
-        "commonjs",
-        {
-          "esm": true
-        }
-      ],
+      ["module", { "esm": true }],
+      ["commonjs", { "esm": true }],
       "typescript"
     ]
   }

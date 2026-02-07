@@ -184,9 +184,10 @@ export class ThresholdClassifier {
         state.lastAbove = isAbove;
 
         if (state.crossingCount >= minCrossings) {
+          const crossings = state.crossingCount;
           state.crossingCount = 0;
           state.windowStart = 0;
-          const confidence = Math.min(0.7 + (state.crossingCount / (minCrossings * 2)) * 0.3, 1);
+          const confidence = Math.min(0.7 + (crossings / (minCrossings * 2)) * 0.3, 1);
           return this.makeResult(gesture, confidence, sample.timestamp);
         }
       }

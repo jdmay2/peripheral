@@ -12,9 +12,11 @@ peripheral/
 │   ├── ble-core/                # @peripheral/ble-core
 │   ├── smart-home/              # @peripheral/smart-home
 │   ├── gesture-engine/          # @peripheral/gesture-engine
+│   ├── integration/             # @peripheral/integration — glue layer (BLE → gestures → smart home)
 │   ├── eslint-config/           # shared ESLint
 │   └── typescript-config/       # shared tsconfig (strict, ES2020, bundler resolution)
-└── apps/                        # placeholder for example Expo app
+└── apps/
+    └── example/                 # Expo dev build app (SDK 54, New Architecture, 5-tab demo)
 ```
 
 ## Tooling and commands
@@ -209,17 +211,72 @@ Target: **<0.02 FP/hour**, 91% TP rate (CHI 2022, 500+ participants).
 
 ---
 
+## @peripheral/integration
+
+Thin glue layer eliminating boilerplate when chaining the three packages together (BLE → gestures → smart home). All three `@peripheral/*` packages are optional peer dependencies — consumers install only what they need.
+
+```txt
+BLE Notification → IMU Parser → GestureEngine → Action Bridge → Home Assistant
+     ↑                                              ↑
+createIMUPipeline()                    createGestureActionBridge()
+     └──────────── useIMUGestureControl() ──────────┘
+```
+
+### integration source layout
+
+| Directory    | Contents                                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `types/`     | `IMUPipelineConfig`, `GestureActionBridgeConfig`, `IMUGestureControlConfig`, `GestureActionMap`, `IMUParserFn`        |
+| `parsers/`   | `createIMU6AxisParser()`, `createIMU3AxisParser()` — factories for common packed int16 LE IMU formats                 |
+| `pipeline/`  | `createIMUPipeline(manager, engine, config)`, `createGestureActionBridge(engine, haClient, config)` — imperative APIs |
+| `hooks/`     | `useIMUGestureControl(config)` — single React hook combining full BLE→gesture→smart home lifecycle                    |
+
+### integration key APIs
+
+- **`createIMUPipeline(manager, engine, config)`** — subscribes to BLE IMU characteristic, parses bytes, feeds to GestureEngine, auto-resubscribes on reconnect
+- **`createGestureActionBridge(engine, haClient, config)`** — maps gesture events to HA service calls with per-gesture and global cooldowns
+- **`useIMUGestureControl(config)`** — combined hook returning `{ pipelineStatus, bridgeStatus, engineState, lastGesture, lastAction, start, stop, error }`
+- **`createIMU6AxisParser(accelScale?, gyroScale?)`** — factory for 12-byte 6-axis data (MPU-6050 defaults)
+- **`createIMU3AxisParser(accelScale?)`** — factory for 6-byte 3-axis data
+
+---
+
+## Example App (`apps/example/`)
+
+Expo Router app (SDK 54, New Architecture) demonstrating all packages across 5 tabs.
+
+| Tab       | Packages Used       | Key Hooks                                                          |
+| --------- | ------------------- | ------------------------------------------------------------------ |
+| Scanner   | ble-core            | `useBleManager`, `useScan`, `useDevice`, `matchProfiles`           |
+| Sensor    | ble-core, gesture   | `useCharacteristic`, `useGestureEngine`, `useSensorVisualization`  |
+| Gestures  | gesture-engine      | `useGestureRecorder`, `useGestureRecognition`, `useGestureLibrary` |
+| Home      | smart-home          | `useHomeAssistant`, `useEntities`, `useService`, `useAreas`        |
+| Pipeline  | integration (all 4) | `useIMUGestureControl` — single hook for full chain                |
+
+```bash
+cd apps/example
+npx expo prebuild --clean   # generate native projects
+npx expo run:ios            # or run:android (requires physical BLE device)
+```
+
+---
+
 ## Cross-package composition
 
-Packages are independent but chain: `ble-core` reads raw IMU data → `gesture-engine` classifies → `smart-home` triggers actions.
+Packages are independent but chain: `ble-core` reads raw IMU data → `gesture-engine` classifies → `smart-home` triggers actions. The `integration` package provides ready-made glue.
 
 ```typescript
-useCharacteristic(device, {
-  onNotification: (data) => engine.feedSamples(parseIMU(data)),
+// Manual composition:
+const { rawValue } = useCharacteristic(deviceId, serviceUUID, charUUID, { autoSubscribe: true });
+useEffect(() => { engine.feedSamples(parseIMU6Axis(rawValue, Date.now())); }, [rawValue]);
+engine.on('gesture', (r) => haClient.callService('light', 'toggle', { entity_id: 'light.living_room' }));
+
+// Or use the integration hook:
+const { lastGesture, lastAction, start, stop } = useIMUGestureControl({
+  deviceId, serviceUUID, characteristicUUID,
+  actionMap: { shake: toggle('light.living_room') },
+  haConfig: { url, auth: { type: 'longLivedToken', token } },
 });
-engine.on("gesture", (r) =>
-  haClient.callService("light", "toggle", { entity_id: "light.living_room" })
-);
 ```
 
 ## Platform compatibility
@@ -247,7 +304,7 @@ Expo requires **dev builds** (not Expo Go) for BLE. Config plugin adds `NSBlueto
 ## Not in scope (yet)
 
 - **Native modules** — HomeKit Swift, Google Home Kotlin, BLE peripheral mode are interface-only
-- **Example app, tests, CI/CD** — placeholders exist, no content
+- **Tests, CI/CD** — no test suites or pipeline yet
 - **Direct Matter** — `@matter/react-native` experimental; use platform hubs
 - **Oura Ring BLE** — proprietary batch-sync; use REST API v2 or separate BLE IMU
 

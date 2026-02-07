@@ -120,7 +120,10 @@ export class ReconnectionManager {
 
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => {
-      this.timer = setTimeout(resolve, ms);
+      this.timer = setTimeout(() => {
+        this.timer = null;
+        resolve();
+      }, ms);
     });
   }
 }

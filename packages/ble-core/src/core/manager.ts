@@ -180,8 +180,9 @@ export class PeripheralManager {
     return this.queue.enqueue(
       async () => {
         // Transition: Disconnected → Connecting
+        const prevState = sm.state;
         sm.transition(ConnectionState.Connecting);
-        this.emitConnectionStateChange(deviceId, sm.state, ConnectionState.Disconnected);
+        this.emitConnectionStateChange(deviceId, sm.state, prevState);
 
         try {
           await BleManager.connect(deviceId);
