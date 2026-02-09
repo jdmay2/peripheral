@@ -63,6 +63,7 @@ This repo uses [Changesets](https://github.com/changesets/changesets) for versio
 
 To enable automated publishing, add a repository secret named `NPM_TOKEN` with an npm **automation token** that has publish access to the `@peripherals` scope.
 If `NPM_TOKEN` is not set, the release workflow will skip publishing (but will still open the release PR).
+For backwards-compatibility, the release workflow also accepts a secret named `Peripheral_Automation`.
 
 ## Device Permissions
 

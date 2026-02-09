@@ -114,6 +114,7 @@ Releases are automated with Changesets via GitHub Actions.
 
 Publishing from CI requires a repository secret named `NPM_TOKEN` (npm automation token with publish access for the `@peripherals` scope).
 If `NPM_TOKEN` is not set, the release workflow will skip publishing.
+For backwards-compatibility, the release workflow also accepts a secret named `Peripheral_Automation`.
 
 ## Reporting Issues
 
