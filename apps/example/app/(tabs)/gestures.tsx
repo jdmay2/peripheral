@@ -18,8 +18,8 @@ import {
   useGestureRecognition,
   useGestureRecorder,
   useGestureLibrary,
-} from '@peripheral/gesture-engine';
-import type { RecognitionResult } from '@peripheral/gesture-engine';
+} from '@peripherals/gesture-engine';
+import type { RecognitionResult } from '@peripherals/gesture-engine';
 
 export default function GesturesScreen() {
   const { engine, start, stop } = useGestureEngine();

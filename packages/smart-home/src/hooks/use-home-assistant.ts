@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { HomeAssistantClient } from '../clients/home-assistant';
 import type { HAConnectionConfig, HAConnectionState } from '../types';
 
 interface UseHomeAssistantReturn {
-  /** The HA client instance. Stable reference across renders. */
+  /** The HA client instance. Stable until config changes. */
   client: HomeAssistantClient;
   /** Current connection state. */
   connectionState: HAConnectionState;
@@ -41,20 +41,25 @@ interface UseHomeAssistantReturn {
 export function useHomeAssistant(
   config: HAConnectionConfig,
 ): UseHomeAssistantReturn {
-  const clientRef = useRef<HomeAssistantClient | null>(null);
+  const configSignature = useMemo(() => JSON.stringify(config), [config]);
+  const client = useMemo(
+    () =>
+      new HomeAssistantClient(
+        JSON.parse(configSignature) as HAConnectionConfig,
+      ),
+    [configSignature],
+  );
   const [connectionState, setConnectionState] = useState<HAConnectionState>(
     'disconnected' as HAConnectionState,
   );
   const [error, setError] = useState<Error | null>(null);
   const [haVersion, setHaVersion] = useState<string | null>(null);
 
-  // Stable client reference
-  if (!clientRef.current) {
-    clientRef.current = new HomeAssistantClient(config);
-  }
-  const client = clientRef.current;
-
   useEffect(() => {
+    setConnectionState(client.connectionState);
+    setHaVersion(client.haVersion);
+    setError(null);
+
     const unsubState = client.on('connectionStateChanged', (state) => {
       setConnectionState(state);
     });
@@ -74,7 +79,7 @@ export function useHomeAssistant(
       unsubError();
       client.disconnect();
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client]);
 
   const reconnect = useCallback(async () => {
     setError(null);

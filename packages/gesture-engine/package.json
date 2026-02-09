@@ -1,5 +1,5 @@
 {
-  "name": "@peripheral/gesture-engine",
+  "name": "@peripherals/gesture-engine",
   "version": "0.1.0",
   "description": "Real-time gesture recognition from BLE IMU sensors — threshold, DTW template matching, and TFLite/ONNX ML inference",
   "main": "lib/commonjs/index.js",
@@ -59,6 +59,13 @@
     "url": "https://github.com/jdmay2/peripheral.git",
     "directory": "packages/gesture-engine"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-native": ">=0.73.0"
@@ -72,7 +79,7 @@
     }
   },
   "devDependencies": {
-    "@peripheral/typescript-config": "workspace:*",
+    "@peripherals/typescript-config": "workspace:*",
     "@types/react": "^19.2.13",
     "react": "^19.2.4",
     "react-native": "^0.83.1",

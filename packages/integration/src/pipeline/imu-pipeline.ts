@@ -10,9 +10,9 @@
 import {
   ConnectionState,
   uuidsMatch,
-} from '@peripheral/ble-core';
-import type { PeripheralManager, CharacteristicNotification } from '@peripheral/ble-core';
-import type { GestureEngine } from '@peripheral/gesture-engine';
+} from '@peripherals/ble-core';
+import type { PeripheralManager, CharacteristicNotification } from '@peripherals/ble-core';
+import type { GestureEngine } from '@peripherals/gesture-engine';
 import type { IMUPipelineConfig, IMUPipelineHandle, IMUPipelineStatus } from '../types';
 import { parseIMU6Axis } from '../parsers/imu-parser';
 

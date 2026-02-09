@@ -5,11 +5,11 @@
  */
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { peripheralManager, ConnectionState } from '@peripheral/ble-core';
-import { GestureEngine } from '@peripheral/gesture-engine';
-import type { RecognitionResult, EngineState } from '@peripheral/gesture-engine';
-import { HomeAssistantClient } from '@peripheral/smart-home';
-import type { ServiceCall } from '@peripheral/smart-home';
+import { peripheralManager, ConnectionState } from '@peripherals/ble-core';
+import { GestureEngine } from '@peripherals/gesture-engine';
+import type { RecognitionResult, EngineState } from '@peripherals/gesture-engine';
+import { HomeAssistantClient } from '@peripherals/smart-home';
+import type { ServiceCall } from '@peripherals/smart-home';
 
 import { createIMUPipeline } from '../pipeline/imu-pipeline';
 import { createGestureActionBridge } from '../pipeline/gesture-action-bridge';
@@ -44,7 +44,6 @@ export function useIMUGestureControl(
   // ─── Stable references ──────────────────────────────────────────────────
 
   const engineRef = useRef<GestureEngine | null>(null);
-  const haClientRef = useRef<HomeAssistantClient | null>(null);
   const pipelineRef = useRef<ReturnType<typeof createIMUPipeline> | null>(null);
   const bridgeRef = useRef<ReturnType<typeof createGestureActionBridge> | null>(null);
 
@@ -54,6 +53,7 @@ export function useIMUGestureControl(
   const [bridgeStatus, setBridgeStatus] = useState<GestureActionBridgeStatus>(DEFAULT_BRIDGE_STATUS);
   const [engineState, setEngineState] = useState<EngineState>('idle' as EngineState);
   const [isDeviceConnected, setIsDeviceConnected] = useState(false);
+  const [haClient, setHaClient] = useState<HomeAssistantClient | null>(null);
   const [isHAConnected, setIsHAConnected] = useState(false);
   const [lastGesture, setLastGesture] = useState<RecognitionResult | null>(null);
   const [lastAction, setLastAction] = useState<{
@@ -117,10 +117,15 @@ export function useIMUGestureControl(
   // ─── Initialize HA client ───────────────────────────────────────────────
 
   useEffect(() => {
-    if (!normalizedHAConfig) return;
+    if (!normalizedHAConfig) {
+      setHaClient(null);
+      setIsHAConnected(false);
+      return;
+    }
 
     const client = new HomeAssistantClient(normalizedHAConfig);
-    haClientRef.current = client;
+    setHaClient(client);
+    setIsHAConnected(false);
 
     const unsubState = client.on('connectionStateChanged', (state) => {
       setIsHAConnected(state === 'connected');
@@ -133,7 +138,8 @@ export function useIMUGestureControl(
       unsubState();
       unsubError();
       client.disconnect();
-      haClientRef.current = null;
+      setHaClient(null);
+      setIsHAConnected(false);
     };
   }, [normalizedHAConfig]);
 
@@ -195,8 +201,10 @@ export function useIMUGestureControl(
   // ─── Create gesture-action bridge ───────────────────────────────────────
 
   useEffect(() => {
-    const haClient = haClientRef.current;
-    if (!haClient || !config.actionMap) return;
+    if (!haClient || !config.actionMap) {
+      setBridgeStatus(DEFAULT_BRIDGE_STATUS);
+      return;
+    }
 
     const bridge = createGestureActionBridge(engine, haClient, {
       actionMap: config.actionMap,
@@ -219,7 +227,7 @@ export function useIMUGestureControl(
       bridge.destroy();
       bridgeRef.current = null;
     };
-  }, [engine, config.actionMap, config.cooldownMs]);
+  }, [engine, haClient, config.actionMap, config.cooldownMs]);
 
   // ─── Controls ─────────────────────────────────────────────────────────
 
@@ -259,7 +267,7 @@ export function useIMUGestureControl(
     resume,
     updateActionMap,
     engine,
-    haClient: haClientRef.current,
+    haClient,
     error,
   };
 }

@@ -9,8 +9,8 @@
  * a recent action history, and tracks execution latency.
  */
 
-import type { GestureEngine, RecognitionResult } from '@peripheral/gesture-engine';
-import type { HomeAssistantClient, ServiceCall } from '@peripheral/smart-home';
+import type { GestureEngine, RecognitionResult } from '@peripherals/gesture-engine';
+import type { HomeAssistantClient, ServiceCall } from '@peripherals/smart-home';
 import type {
   GestureActionBridgeConfig,
   GestureActionBridgeHandle,

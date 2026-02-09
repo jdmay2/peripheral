@@ -1,4 +1,4 @@
-# Contributing to @peripheral
+# Contributing to @peripherals
 
 Thank you for your interest in contributing. This guide covers the development workflow and conventions used in this monorepo.
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing. This guide covers the development w
 git clone https://github.com/jdmay2/peripheral.git
 cd peripheral
 pnpm install
-pnpm build
-pnpm typecheck
+pnpm verify:repo
+pnpm verify:example-config
 ```
 
 ## Monorepo Structure
@@ -23,10 +23,10 @@ pnpm typecheck
 ```
 peripheral/
   packages/
-    ble-core/          # @peripheral/ble-core
-    smart-home/        # @peripheral/smart-home
-    gesture-engine/    # @peripheral/gesture-engine
-    integration/       # @peripheral/integration
+    ble-core/          # @peripherals/ble-core
+    smart-home/        # @peripherals/smart-home
+    gesture-engine/    # @peripherals/gesture-engine
+    integration/       # @peripherals/integration
     eslint-config/     # Shared ESLint config (internal)
     typescript-config/  # Shared TypeScript config (internal)
   apps/
@@ -39,7 +39,12 @@ Packages are built with `react-native-builder-bob` and produce three outputs: ES
 
 1. Create a branch from `main`.
 2. Make your changes.
-3. Run `pnpm typecheck` and `pnpm build` to verify.
+3. Run full verification:
+   ```bash
+   pnpm verify:repo
+   pnpm verify:pack
+   pnpm verify:example-config
+   ```
 4. If your change affects users (new API, bug fix, behavior change), create a changeset:
    ```bash
    pnpm changeset
@@ -70,7 +75,12 @@ Update Home Assistant WebSocket client to handle auth refresh
 
 ## Testing
 
-BLE functionality requires a physical device. The example app at `apps/example` serves as the integration test surface:
+This repository follows a **hybrid verification model**:
+
+- Automated checks for linting, type safety, build artifacts, and non-device unit tests
+- Manual physical-device validation for BLE permission and radio behavior
+
+BLE functionality requires a physical device. The example app at `apps/example` serves as the manual integration test surface:
 
 ```bash
 cd apps/example
@@ -78,16 +88,18 @@ npx expo prebuild --clean
 npx expo run:ios   # or run:android
 ```
 
-Unit tests (where they exist) run via:
+Automated test suite:
 
 ```bash
-pnpm test
+pnpm verify:repo
 ```
+
+Permission and runtime validation checklist is documented in `docs/permissions.md`.
 
 ## Pull Request Process
 
 1. Fill out the PR template completely.
-2. Ensure `pnpm typecheck` and `pnpm build` pass.
+2. Ensure `pnpm verify:repo`, `pnpm verify:pack`, and `pnpm verify:example-config` pass.
 3. Add a changeset if the change is user-facing.
 4. Update the relevant package README if the public API changed.
 5. One approval is required before merging.

@@ -1,18 +1,18 @@
-# CLAUDE.md — @peripheral monorepo
+# CLAUDE.md — @peripherals monorepo
 
 React Native Expo monorepo (pnpm + Turborepo + Changesets) for BLE peripheral management, smart home control, and IMU gesture recognition. Pure TypeScript, ESM + CJS via `react-native-builder-bob`. Targets Expo SDK 54/55 New Architecture.
 
 ```txt
 peripheral/
-├── .changeset/config.json       # linked versioning for @peripheral/*
+├── .changeset/config.json       # linked versioning for @peripherals/*
 ├── .npmrc                       # node-linker=hoisted (mandatory for Metro)
 ├── turbo.json                   # build pipeline: ^build dep ordering, cached
 ├── pnpm-workspace.yaml          # packages/*, apps/*
 ├── packages/
-│   ├── ble-core/                # @peripheral/ble-core
-│   ├── smart-home/              # @peripheral/smart-home
-│   ├── gesture-engine/          # @peripheral/gesture-engine
-│   ├── integration/             # @peripheral/integration — glue layer (BLE → gestures → smart home)
+│   ├── ble-core/                # @peripherals/ble-core
+│   ├── smart-home/              # @peripherals/smart-home
+│   ├── gesture-engine/          # @peripherals/gesture-engine
+│   ├── integration/             # @peripherals/integration — glue layer (BLE → gestures → smart home)
 │   ├── eslint-config/           # shared ESLint
 │   └── typescript-config/       # shared tsconfig (strict, ES2020, bundler resolution)
 └── apps/
@@ -25,7 +25,7 @@ peripheral/
 | ----------- | ------- | ---------------------------------------------------------- |
 | pnpm        | 10.29.2 | `node-linker=hoisted` in `.npmrc` — **required** for Metro |
 | Turborepo   | 2.8.3   | `turbo build` with `^build` dep ordering + remote caching  |
-| Changesets  | 2.29.8  | `"linked": [["@peripheral/*"]]`, `"access": "public"`      |
+| Changesets  | 2.29.8  | `"linked": [["@peripherals/*"]]`, `"access": "public"`      |
 | builder-bob | 0.40.17 | ESM (`{"esm": true}`) + CJS + `.d.ts` to `lib/`            |
 | TypeScript  | 5.9+    | Strict, `noUncheckedIndexedAccess`, bundler resolution     |
 
@@ -56,7 +56,7 @@ Each package exports via the `"react-native"` condition **before** `"import"`/`"
 
 ---
 
-## @peripheral/ble-core
+## @peripherals/ble-core
 
 BLE connection management + GATT data parsing. Wraps `react-native-ble-manager` (peer dep ≥11.0.0) with state machine, command queue, reconnection, and typed parsers for 30+ Bluetooth SIG characteristics.
 
@@ -108,7 +108,7 @@ PeripheralManager (singleton)
 
 ---
 
-## @peripheral/smart-home
+## @peripherals/smart-home
 
 Smart home integration via Home Assistant (primary), MQTT, and HomeKit. HA is the universal bridge (2000+ integrations). Alexa has no mobile API; Google Home APIs are beta-only; HomeKit is iOS-only.
 
@@ -146,7 +146,7 @@ HomeKitClient (interface only) ──► iOS: requires custom Swift Expo Module 
 
 ---
 
-## @peripheral/gesture-engine
+## @peripherals/gesture-engine
 
 IMU gesture recognition from BLE wearable sensors. Three-tier classification + six-layer false positive mitigation. Pure TypeScript, ~4,300 lines. No required native deps.
 
@@ -225,9 +225,9 @@ Target: **<0.02 FP/hour**, 91% TP rate (CHI 2022, 500+ participants).
 
 ---
 
-## @peripheral/integration
+## @peripherals/integration
 
-Thin glue layer eliminating boilerplate when chaining the three packages together (BLE → gestures → smart home). All three `@peripheral/*` packages are optional peer dependencies — consumers install only what they need.
+Thin glue layer eliminating boilerplate when chaining the three packages together (BLE → gestures → smart home). All three `@peripherals/*` packages are optional peer dependencies — consumers install only what they need.
 
 ```txt
 BLE Notification → IMU Parser → GestureEngine → Action Bridge → Home Assistant
@@ -313,7 +313,7 @@ Expo requires **dev builds** (not Expo Go) for BLE. Config plugin adds `NSBlueto
 - **Parsers**: `parseXxxMeasurement(dataView)` — DataView in, typed object out, little-endian, checks sentinels
 - **Builders**: `buildXxx` (FTMS/RACP), `xxxYyy` (service calls like `lightTurnOn`)
 - **Events**: typed `EventEmitter<{eventName: PayloadType}>` pattern
-- **Naming**: `@peripheral/` scope, PascalCase interfaces, `XxxClient` for clients
+- **Naming**: `@peripherals/` scope, PascalCase interfaces, `XxxClient` for clients
 - **Exports**: `"react-native"` condition first in `package.json` exports map
 
 ## Not in scope (yet)

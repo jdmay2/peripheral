@@ -1,4 +1,4 @@
-# @peripheral/smart-home
+# @peripherals/smart-home
 
 React Native smart home integration — Home Assistant, MQTT, and HomeKit.
 
@@ -14,11 +14,13 @@ React Native smart home integration — Home Assistant, MQTT, and HomeKit.
 ## Installation
 
 ```bash
-npm install @peripheral/smart-home home-assistant-js-websocket
+npm install @peripherals/smart-home
 
 # Optional: MQTT support
 npm install mqtt
 ```
+
+`home-assistant-js-websocket` is bundled as a package dependency, so no separate install is required.
 
 ## Quick start — Home Assistant
 
@@ -30,7 +32,7 @@ import {
   Light,
   lightTurnOn,
   lightTurnOff,
-} from '@peripheral/smart-home';
+} from '@peripherals/smart-home';
 
 function App() {
   const { client, isConnected, connectionState } = useHomeAssistant({
@@ -185,7 +187,7 @@ Each domain has a typed wrapper with domain-specific properties:
 | `BinarySensor` | `binary_sensor` | `isOn`, `displayState` (context-aware: "Open"/"Closed", "Detected"/"Clear") |
 
 ```ts
-import { createDevice, Light, Climate } from '@peripheral/smart-home';
+import { createDevice, Light, Climate } from '@peripherals/smart-home';
 
 const entity = client.getEntity('light.kitchen');
 const light = createDevice(entity) as Light;
@@ -217,7 +219,7 @@ import {
   triggerAutomation,
   runScript,
   // ... and more
-} from '@peripheral/smart-home';
+} from '@peripherals/smart-home';
 
 await client.executeServiceCall(
   lightTurnOn('light.kitchen', {
@@ -279,7 +281,7 @@ HomeKit requires a custom Expo native module. The package provides the JS interf
 ### Usage
 
 ```ts
-import { HomeKitClient } from '@peripheral/smart-home';
+import { HomeKitClient } from '@peripherals/smart-home';
 
 const homekit = new HomeKitClient();
 
@@ -306,7 +308,7 @@ import {
   filterByArea,        // filter entity array by area
   groupByDomain,       // group entities into Record<domain, entity[]>
   groupByArea,         // group entities into Record<areaId, entity[]>
-} from '@peripheral/smart-home';
+} from '@peripherals/smart-home';
 ```
 
 ## Imperative client usage
@@ -314,7 +316,7 @@ import {
 The clients can be used without React hooks for non-React contexts:
 
 ```ts
-import { HomeAssistantClient, MQTTClient } from '@peripheral/smart-home';
+import { HomeAssistantClient, MQTTClient } from '@peripherals/smart-home';
 
 const ha = new HomeAssistantClient({
   url: 'http://192.168.1.100:8123',
@@ -353,8 +355,8 @@ await ha.fireEvent('my_custom_event', { key: 'value' });
 ## Requirements
 
 - React Native ≥ 0.73
-- `home-assistant-js-websocket` ≥ 9.0.0 (required peer)
-- `mqtt` ≥ 5.0.0 (optional, for MQTT features)
+- Home Assistant WebSocket support is bundled (`home-assistant-js-websocket`)
+- `mqtt` ≥ 5.0.0 (optional, for MQTT features; bundled as an optional dependency)
 - Home Assistant ≥ 2024.1 (WebSocket API)
 - iOS only: custom Expo Module for HomeKit
 
@@ -368,7 +370,7 @@ For most apps, **Home Assistant as the universal bridge** gives the broadest dev
 ├──────────┬──────────┬──────────┬────────────┤
 │ useEntity│ useMQTT  │ useAreas │ HomeKit*   │
 ├──────────┴──────────┴──────────┴────────────┤
-│        @peripheral/smart-home               │
+│        @peripherals/smart-home               │
 ├─────────────────┬──────────┬────────────────┤
 │ HA WebSocket    │ MQTT     │ HomeKit Native │
 ├─────────────────┴──────────┴────────────────┤

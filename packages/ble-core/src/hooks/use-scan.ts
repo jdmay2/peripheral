@@ -29,6 +29,14 @@ export function useScan(): UseScanResult {
   const [devices, setDevices] = useState<ScanResult[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const deviceMapRef = useRef(new Map<string, ScanResult>());
+  const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearScanTimeout = useCallback(() => {
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current);
+      scanTimeoutRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     const unsub = peripheralManager.on('onDeviceFound', (device) => {
@@ -38,17 +46,20 @@ export function useScan(): UseScanResult {
 
     return () => {
       unsub();
+      clearScanTimeout();
     };
-  }, []);
+  }, [clearScanTimeout]);
 
   const startScan = useCallback(async (filter?: ScanFilter) => {
+    clearScanTimeout();
     setIsScanning(true);
     try {
       await peripheralManager.startScan(filter);
 
       // Auto-stop after duration
       if (filter?.duration && filter.duration > 0) {
-        setTimeout(() => {
+        scanTimeoutRef.current = setTimeout(() => {
+          scanTimeoutRef.current = null;
           setIsScanning(false);
         }, filter.duration);
       }
@@ -56,12 +67,13 @@ export function useScan(): UseScanResult {
       setIsScanning(false);
       throw error;
     }
-  }, []);
+  }, [clearScanTimeout]);
 
   const stopScan = useCallback(async () => {
+    clearScanTimeout();
     await peripheralManager.stopScan();
     setIsScanning(false);
-  }, []);
+  }, [clearScanTimeout]);
 
   const clearDevices = useCallback(() => {
     deviceMapRef.current.clear();

@@ -1,15 +1,15 @@
-# @peripheral
+# @peripherals
 
-React Native monorepo for BLE peripheral management, smart home control, and IMU gesture recognition. Pure TypeScript, targeting Expo SDK 54/55 with New Architecture support.
+React Native monorepo for BLE peripheral management, smart home control, and IMU gesture recognition. Pure TypeScript, targeting Expo SDK 54+ with New Architecture support.
 
 ## Packages
 
 | Package | Description | Install |
 |---------|-------------|---------|
-| [`@peripheral/ble-core`](packages/ble-core) | BLE connection management, typed GATT parsers, auto-reconnection, React hooks | `npm install @peripheral/ble-core` |
-| [`@peripheral/smart-home`](packages/smart-home) | Home Assistant (WebSocket/REST), MQTT, HomeKit integration with React hooks | `npm install @peripheral/smart-home` |
-| [`@peripheral/gesture-engine`](packages/gesture-engine) | IMU gesture recognition — threshold, DTW template matching, TFLite/ONNX ML | `npm install @peripheral/gesture-engine` |
-| [`@peripheral/integration`](packages/integration) | Glue layer: BLE sensor → gesture recognition → smart home actions | `npm install @peripheral/integration` |
+| [`@peripherals/ble-core`](packages/ble-core) | BLE connection management, typed GATT parsers, auto-reconnection, React hooks | `npm install @peripherals/ble-core` |
+| [`@peripherals/smart-home`](packages/smart-home) | Home Assistant (WebSocket/REST), MQTT, HomeKit integration with React hooks | `npm install @peripherals/smart-home` |
+| [`@peripherals/gesture-engine`](packages/gesture-engine) | IMU gesture recognition — threshold, DTW template matching, TFLite/ONNX ML | `npm install @peripherals/gesture-engine` |
+| [`@peripherals/integration`](packages/integration) | Glue layer: BLE sensor → gesture recognition → smart home actions | `npm install @peripherals/integration` |
 
 Packages are independent — install only what you need. The `integration` package chains all three together with a single React hook.
 
@@ -17,19 +17,27 @@ Packages are independent — install only what you need. The `integration` packa
 
 ```bash
 # Install a package
-npm install @peripheral/ble-core react-native-ble-manager
+npm install @peripherals/ble-core react-native-ble-manager
 
 # Or install everything
-npm install @peripheral/ble-core @peripheral/smart-home @peripheral/gesture-engine @peripheral/integration
+npm install @peripherals/ble-core @peripherals/smart-home @peripherals/gesture-engine @peripherals/integration
 ```
 
 ## Requirements
 
+- Node.js >= 18.0.0
+- pnpm 10.x for repo development
 - React Native ≥ 0.73 (0.83+ mandates New Architecture)
 - React ≥ 18.0
-- Expo SDK 53+ (dev builds, not Expo Go — required for BLE)
+- Expo SDK 54+ for the example app (`apps/example`)
 - iOS 15.1+ / Android API 24+
 - Physical device for BLE testing (no simulator support)
+
+## Package Manager Policy
+
+- This monorepo is **pnpm-first**.
+- npm is fully supported for consuming published packages.
+- Root `package.json` includes `workspaces` for npm tooling compatibility, but repo-level npm commands may still print warnings because `.npmrc` contains pnpm-specific keys.
 
 ## Development
 
@@ -37,10 +45,17 @@ npm install @peripheral/ble-core @peripheral/smart-home @peripheral/gesture-engi
 pnpm install                  # Install dependencies
 pnpm build                    # Build all packages
 pnpm typecheck                # Type-check all packages
+pnpm verify:repo              # Lint + typecheck + build + test
+pnpm verify:pack              # Verify package tarball contents
+pnpm verify:example-config    # Verify resolved Expo app config
 pnpm changeset                # Create a changeset for your PR
 pnpm version-packages         # Apply changesets (bump versions + changelogs)
 pnpm release                  # Build + publish to npm
 ```
+
+## Device Permissions
+
+See `docs/permissions.md` for iOS/Android permission requirements, runtime behavior, and manual validation scenarios.
 
 ## License
 

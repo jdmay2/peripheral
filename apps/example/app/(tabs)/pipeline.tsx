@@ -12,9 +12,10 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { useIMUGestureControl } from '@peripheral/integration';
-import type { GestureActionMap } from '@peripheral/integration';
-import { toggle } from '@peripheral/smart-home';
+import { useIMUGestureControl } from '@peripherals/integration';
+import type { GestureActionMap } from '@peripherals/integration';
+import { EngineState } from '@peripherals/gesture-engine';
+import { toggle } from '@peripherals/smart-home';
 
 export default function PipelineScreen() {
   const [deviceId, setDeviceId] = useState('');
@@ -151,6 +152,8 @@ function PipelineDashboard({
     start();
     return () => stop();
   }, [start, stop]);
+  const isEngineActive =
+    engineState === EngineState.Listening || engineState === EngineState.Armed;
 
   return (
     <ScrollView style={styles.container}>
@@ -173,7 +176,7 @@ function PipelineDashboard({
         />
         <StatusCard
           title="Engine"
-          status={engineState === ('listening' as any) ? 'active' : engineState}
+          status={isEngineActive ? 'active' : engineState}
           detail={lastGesture ? `Last: ${lastGesture.gestureName ?? lastGesture.gestureId}` : 'Waiting...'}
           metric={lastGesture ? `${(lastGesture.confidence * 100).toFixed(0)}% conf` : ''}
         />
@@ -196,7 +199,7 @@ function PipelineDashboard({
         <Text style={styles.arrow}>  ↓</Text>
         <FlowStep
           label="2. Gesture Recognition"
-          active={engineState === ('listening' as any)}
+          active={isEngineActive}
           value={lastGesture?.gestureName ?? 'No gesture'}
         />
         <Text style={styles.arrow}>  ↓</Text>

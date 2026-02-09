@@ -17,8 +17,8 @@ import {
   useScan,
   useDevice,
   matchProfiles,
-} from '@peripheral/ble-core';
-import type { ScanResult } from '@peripheral/ble-core';
+} from '@peripherals/ble-core';
+import type { ScanResult } from '@peripherals/ble-core';
 
 export default function ScannerScreen() {
   const { isReady, error: bleError } = useBleManager();

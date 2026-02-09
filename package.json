@@ -1,6 +1,10 @@
 {
   "name": "peripheral",
   "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,6 +17,9 @@
     "test": "turbo test",
     "clean": "turbo clean",
     "typecheck": "turbo typecheck",
+    "verify:repo": "pnpm lint && pnpm typecheck && pnpm build && pnpm test",
+    "verify:pack": "pnpm -r --filter \"./packages/*\" pack --json --pack-destination /tmp",
+    "verify:example-config": "pnpm --dir apps/example exec expo config --json",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo build && changeset publish",

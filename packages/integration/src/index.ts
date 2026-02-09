@@ -1,13 +1,13 @@
 /**
- * @peripheral/integration
+ * @peripherals/integration
  *
  * Glue layer connecting BLE sensors -> gesture recognition -> smart home actions.
- * Eliminates boilerplate wiring between @peripheral packages.
+ * Eliminates boilerplate wiring between @peripherals packages.
  *
- * All three @peripheral packages are optional peer dependencies:
- * - @peripheral/ble-core: required for createIMUPipeline
- * - @peripheral/gesture-engine: required for createIMUPipeline + createGestureActionBridge
- * - @peripheral/smart-home: required for createGestureActionBridge
+ * All three @peripherals packages are optional peer dependencies:
+ * - @peripherals/ble-core: required for createIMUPipeline
+ * - @peripherals/gesture-engine: required for createIMUPipeline + createGestureActionBridge
+ * - @peripherals/smart-home: required for createGestureActionBridge
  */
 
 // ─── Pipeline ───────────────────────────────────────────────────────────────

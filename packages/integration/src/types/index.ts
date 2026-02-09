@@ -1,11 +1,11 @@
 /**
- * Types for the @peripheral/integration package.
+ * Types for the @peripherals/integration package.
  */
 
-import type { IMUSample, RecognitionResult, GestureEngineConfig, EngineState } from '@peripheral/gesture-engine';
-import type { ServiceCall, HAConnectionConfig } from '@peripheral/smart-home';
-import type { GestureEngine } from '@peripheral/gesture-engine';
-import type { HomeAssistantClient } from '@peripheral/smart-home';
+import type { IMUSample, RecognitionResult, GestureEngineConfig, EngineState } from '@peripherals/gesture-engine';
+import type { ServiceCall, HAConnectionConfig } from '@peripherals/smart-home';
+import type { GestureEngine } from '@peripherals/gesture-engine';
+import type { HomeAssistantClient } from '@peripherals/smart-home';
 
 // ─── IMU Pipeline ────────────────────────────────────────────────────────────
 

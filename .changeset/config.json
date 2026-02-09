@@ -3,9 +3,9 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
-  "linked": [["@peripheral/*"]],
+  "linked": [["@peripherals/*"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@peripheral/example-app"]
+  "ignore": ["@peripherals/example-app"]
 }

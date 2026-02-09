@@ -101,7 +101,7 @@ async function getMqttConnect(): Promise<MqttConnectFn> {
     return mqttConnect;
   } catch {
     throw new Error(
-      '@peripheral/smart-home: MQTT support requires the "mqtt" package. ' +
+      '@peripherals/smart-home: MQTT support requires the "mqtt" package. ' +
         'Install it with: npm install mqtt',
     );
   }

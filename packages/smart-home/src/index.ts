@@ -1,5 +1,5 @@
 /**
- * @peripheral/smart-home
+ * @peripherals/smart-home
  *
  * React Native smart home integration — Home Assistant, MQTT, and HomeKit.
  *
@@ -19,7 +19,7 @@
  *   Light,
  *   lightTurnOn,
  *   lightTurnOff,
- * } from '@peripheral/smart-home';
+ * } from '@peripherals/smart-home';
  *
  * function App() {
  *   const { client, isConnected } = useHomeAssistant({

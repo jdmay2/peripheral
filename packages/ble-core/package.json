@@ -1,5 +1,5 @@
 {
-  "name": "@peripheral/ble-core",
+  "name": "@peripherals/ble-core",
   "version": "0.1.0",
   "description": "React Native BLE peripheral management with typed GATT parsers, auto-reconnection, and React hooks",
   "main": "lib/commonjs/index.js",
@@ -59,6 +59,13 @@
     "url": "https://github.com/jdmay2/peripheral.git",
     "directory": "packages/ble-core"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-native": ">=0.73.0",
@@ -70,7 +77,7 @@
     }
   },
   "devDependencies": {
-    "@peripheral/typescript-config": "workspace:*",
+    "@peripherals/typescript-config": "workspace:*",
     "@types/react": "^19.2.13",
     "jest": "^30.2.0",
     "react": "^19.2.4",

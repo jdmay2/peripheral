@@ -1,5 +1,5 @@
 {
-  "name": "@peripheral/integration",
+  "name": "@peripherals/integration",
   "version": "0.1.0",
   "description": "Glue layer connecting BLE sensors → gesture recognition → smart home actions",
   "main": "lib/commonjs/index.js",
@@ -57,29 +57,36 @@
     "url": "https://github.com/jdmay2/peripheral.git",
     "directory": "packages/integration"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-native": ">=0.73.0",
-    "@peripheral/ble-core": ">=0.1.0",
-    "@peripheral/gesture-engine": ">=0.1.0",
-    "@peripheral/smart-home": ">=0.1.0"
+    "@peripherals/ble-core": ">=0.1.0",
+    "@peripherals/gesture-engine": ">=0.1.0",
+    "@peripherals/smart-home": ">=0.1.0"
   },
   "peerDependenciesMeta": {
-    "@peripheral/ble-core": {
+    "@peripherals/ble-core": {
       "optional": true
     },
-    "@peripheral/gesture-engine": {
+    "@peripherals/gesture-engine": {
       "optional": true
     },
-    "@peripheral/smart-home": {
+    "@peripherals/smart-home": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@peripheral/ble-core": "workspace:*",
-    "@peripheral/gesture-engine": "workspace:*",
-    "@peripheral/smart-home": "workspace:*",
-    "@peripheral/typescript-config": "workspace:*",
+    "@peripherals/ble-core": "workspace:*",
+    "@peripherals/gesture-engine": "workspace:*",
+    "@peripherals/smart-home": "workspace:*",
+    "@peripherals/typescript-config": "workspace:*",
     "@types/react": "^19.2.13",
     "react": "^19.2.4",
     "react-native": "^0.83.1",

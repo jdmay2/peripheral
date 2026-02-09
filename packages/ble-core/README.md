@@ -1,4 +1,4 @@
-# @peripheral/ble-core
+# @peripherals/ble-core
 
 React Native BLE peripheral management with typed GATT parsers, auto-reconnection, command queue, and React hooks.
 
@@ -18,9 +18,9 @@ Every React Native BLE app reinvents the same things: connection state machines,
 ## Install
 
 ```bash
-npm install @peripheral/ble-core react-native-ble-manager
+npm install @peripherals/ble-core react-native-ble-manager
 # or
-pnpm add @peripheral/ble-core react-native-ble-manager
+pnpm add @peripherals/ble-core react-native-ble-manager
 ```
 
 ### Expo
@@ -34,12 +34,15 @@ Add the config plugin in `app.json`:
       "react-native-ble-manager",
       {
         "isBackgroundEnabled": true,
-        "neverForLocation": true
+        "modes": ["central"],
+        "bluetoothAlwaysPermission": "This app uses Bluetooth to connect to BLE peripherals."
       }
     ]
   ]
 }
 ```
+
+For platform permission details and runtime validation scenarios, see `docs/permissions.md` in the monorepo.
 
 Build a dev client (BLE does not work in Expo Go):
 
@@ -57,8 +60,8 @@ import {
   useScan,
   useDevice,
   useCharacteristic,
-} from '@peripheral/ble-core';
-import type { HeartRateMeasurement } from '@peripheral/ble-core';
+} from '@peripherals/ble-core';
+import type { HeartRateMeasurement } from '@peripherals/ble-core';
 
 function App() {
   const { isReady } = useBleManager();
@@ -128,7 +131,7 @@ When you subscribe to a characteristic, the library automatically parses the raw
 ### Register custom parsers
 
 ```ts
-import { registerParser } from '@peripheral/ble-core';
+import { registerParser } from '@peripherals/ble-core';
 
 registerParser({
   characteristicUUID: 'FFE1',
@@ -176,7 +179,7 @@ import {
   buildFTMSRequestControl,
   buildFTMSSetTargetPower,
   buildFTMSSetSimulation,
-} from '@peripheral/ble-core';
+} from '@peripherals/ble-core';
 
 const { write } = useCharacteristic(deviceId, '1826', '2AD9');
 
@@ -193,7 +196,7 @@ await write(buildFTMSSetSimulation(0, 5, 0.004, 0.51));
 ## Device profiles
 
 ```ts
-import { matchProfiles, HeartRateMonitorProfile } from '@peripheral/ble-core';
+import { matchProfiles, HeartRateMonitorProfile } from '@peripherals/ble-core';
 
 // Find which profiles match a device's advertised services
 const profiles = matchProfiles(device.serviceUUIDs);
@@ -210,7 +213,7 @@ for (const sub of profile.autoSubscribe) {
 For non-React use or advanced control:
 
 ```ts
-import { peripheralManager } from '@peripheral/ble-core';
+import { peripheralManager } from '@peripherals/ble-core';
 
 await peripheralManager.initialize();
 const device = await peripheralManager.connect(deviceId);
@@ -226,7 +229,7 @@ await peripheralManager.startNotifications(deviceId, '180D', '2A37');
 ## Requirements
 
 - React Native ≥ 0.73
-- Expo SDK ≥ 52 (with dev client, not Expo Go)
+- Expo SDK ≥ 54 for the example app in this monorepo (dev client, not Expo Go)
 - `react-native-ble-manager` ≥ 11.0.0
 - iOS 15.1+ / Android API 24+
 - Physical device (BLE does not work in simulators/emulators)

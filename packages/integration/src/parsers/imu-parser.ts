@@ -6,7 +6,7 @@
  * common formats; consumers can supply custom parsers via IMUParserFn.
  */
 
-import type { IMUSample } from '@peripheral/gesture-engine';
+import type { IMUSample } from '@peripherals/gesture-engine';
 import type { IMUParserFn } from '../types';
 
 /**

@@ -1,8 +1,8 @@
 {
-  "extends": "@peripheral/typescript-config/react-native.json",
+  "extends": "@peripherals/typescript-config/react-native.json",
   "compilerOptions": {
     "paths": {
-      "@peripheral/*": ["../../packages/*/src"]
+      "@peripherals/*": ["../../packages/*/src"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

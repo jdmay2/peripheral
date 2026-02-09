@@ -20,16 +20,16 @@ importers:
       '@expo/metro-runtime':
         specifier: ~6.1.2
         version: 6.1.2(expo@54.0.33)(react-dom@18.3.1(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.13)(react@19.1.0))(react@19.1.0)
-      '@peripheral/ble-core':
+      '@peripherals/ble-core':
         specifier: workspace:*
         version: link:../../packages/ble-core
-      '@peripheral/gesture-engine':
+      '@peripherals/gesture-engine':
         specifier: workspace:*
         version: link:../../packages/gesture-engine
-      '@peripheral/integration':
+      '@peripherals/integration':
         specifier: workspace:*
         version: link:../../packages/integration
-      '@peripheral/smart-home':
+      '@peripherals/smart-home':
         specifier: workspace:*
         version: link:../../packages/smart-home
       expo:
@@ -60,7 +60,7 @@ importers:
         specifier: ^4.16.0
         version: 4.16.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.13)(react@19.1.0))(react@19.1.0)
     devDependencies:
-      '@peripheral/typescript-config':
+      '@peripherals/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@types/react':
@@ -72,7 +72,7 @@ importers:
 
   packages/ble-core:
     devDependencies:
-      '@peripheral/typescript-config':
+      '@peripherals/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/react':
@@ -117,7 +117,7 @@ importers:
 
   packages/gesture-engine:
     devDependencies:
-      '@peripheral/typescript-config':
+      '@peripherals/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/react':
@@ -141,16 +141,16 @@ importers:
 
   packages/integration:
     devDependencies:
-      '@peripheral/ble-core':
+      '@peripherals/ble-core':
         specifier: workspace:*
         version: link:../ble-core
-      '@peripheral/gesture-engine':
+      '@peripherals/gesture-engine':
         specifier: workspace:*
         version: link:../gesture-engine
-      '@peripheral/smart-home':
+      '@peripherals/smart-home':
         specifier: workspace:*
         version: link:../smart-home
-      '@peripheral/typescript-config':
+      '@peripherals/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/react':
@@ -181,7 +181,7 @@ importers:
         specifier: ^9.6.0
         version: 9.6.0
     devDependencies:
-      '@peripheral/typescript-config':
+      '@peripherals/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/react':

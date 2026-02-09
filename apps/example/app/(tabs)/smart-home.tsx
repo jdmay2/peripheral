@@ -19,8 +19,8 @@ import {
   useService,
   useAreas,
   toggle,
-} from '@peripheral/smart-home';
-import type { SmartHomeEntity } from '@peripheral/smart-home';
+} from '@peripherals/smart-home';
+import type { SmartHomeEntity } from '@peripherals/smart-home';
 
 export default function SmartHomeScreen() {
   const [url, setUrl] = useState('');

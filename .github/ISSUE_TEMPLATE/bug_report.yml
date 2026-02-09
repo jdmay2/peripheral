@@ -8,10 +8,10 @@ body:
       label: Package
       description: Which package is affected?
       options:
-        - "@peripheral/ble-core"
-        - "@peripheral/smart-home"
-        - "@peripheral/gesture-engine"
-        - "@peripheral/integration"
+        - "@peripherals/ble-core"
+        - "@peripherals/smart-home"
+        - "@peripherals/gesture-engine"
+        - "@peripherals/integration"
         - "Monorepo / Build tooling"
     validations:
       required: true
@@ -30,7 +30,7 @@ body:
       label: Steps to Reproduce
       description: Minimal steps to reproduce the behavior.
       placeholder: |
-        1. Install @peripheral/ble-core
+        1. Install @peripherals/ble-core
         2. Call useScan() with ...
         3. See error ...
     validations:
@@ -58,7 +58,7 @@ body:
       label: Environment
       description: Version and platform details.
       placeholder: |
-        - @peripheral package version:
+        - @peripherals package version:
         - React Native version:
         - Expo SDK version:
         - Platform: iOS / Android

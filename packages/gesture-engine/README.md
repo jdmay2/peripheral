@@ -1,4 +1,4 @@
-# @peripheral/gesture-engine
+# @peripherals/gesture-engine
 
 IMU-based gesture recognition for React Native. Three-tier classification from BLE wearable sensors with six-layer false positive mitigation achieving <0.02 false positives per hour.
 
@@ -20,7 +20,7 @@ IMU-based gesture recognition for React Native. Three-tier classification from B
 
 ```bash
 # In your monorepo
-pnpm add @peripheral/gesture-engine
+pnpm add @peripherals/gesture-engine
 
 # Optional peer dependencies for ML inference:
 pnpm add react-native-fast-tflite   # TFLite (recommended, JSI-based)
@@ -34,7 +34,7 @@ import {
   useGestureEngine,
   useGestureRecognition,
   useGestureLibrary,
-} from '@peripheral/gesture-engine';
+} from '@peripherals/gesture-engine';
 
 function GestureController() {
   const { engine, isListening, start, stop, feedSamples } =
@@ -153,7 +153,7 @@ Features:
 For production quality, train a model in Python and run on-device:
 
 ```ts
-import { GestureEngine } from '@peripheral/gesture-engine';
+import { GestureEngine } from '@peripherals/gesture-engine';
 
 const engine = new GestureEngine({
   classifier: 'tflite',
@@ -322,7 +322,7 @@ const {
 Export/import the gesture library for storage:
 
 ```ts
-import { useGestureLibrary } from '@peripheral/gesture-engine';
+import { useGestureLibrary } from '@peripherals/gesture-engine';
 
 // Export (e.g., save to MMKV)
 const data = exportLibrary();
@@ -338,7 +338,7 @@ importLibrary(saved);
 The engine is sensor-agnostic — feed any IMU data as `IMUSample[]`:
 
 ```ts
-import { useBleDevice, useCharacteristic } from '@peripheral/ble-core';
+import { useBleDevice, useCharacteristic } from '@peripherals/ble-core';
 
 function useSensorBridge(engine: GestureEngine, deviceId: string) {
   const device = useBleDevice(deviceId);
@@ -367,7 +367,7 @@ import {
   extractTimeDomainFeatures,
   extractFrequencyDomainFeatures,
   extractFeatures,
-} from '@peripheral/gesture-engine';
+} from '@peripherals/gesture-engine';
 
 // Full feature vector (time + frequency domain)
 const features = extractFeatures(window, true);
@@ -392,7 +392,7 @@ import {
   butterworthLowPass,
   butterworthHighPass,
   zScoreNormalize,
-} from '@peripheral/gesture-engine';
+} from '@peripherals/gesture-engine';
 
 // Preprocessing: low-pass (20 Hz) → high-pass (0.3 Hz gravity removal)
 const pipeline = new PreprocessingPipeline({
@@ -413,7 +413,7 @@ const magnitudes = buffer.extractMagnitude(100);
 ## Imperative usage (no React)
 
 ```ts
-import { GestureEngine } from '@peripheral/gesture-engine';
+import { GestureEngine } from '@peripherals/gesture-engine';
 
 const engine = new GestureEngine({
   sampleRate: 50,

@@ -1,5 +1,5 @@
 /**
- * @peripheral/gesture-engine
+ * @peripherals/gesture-engine
  *
  * IMU-based gesture recognition for React Native.
  * Three-tier classification (threshold → DTW → ML) with

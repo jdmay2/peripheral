@@ -10,9 +10,8 @@ import type {
   BleCharacteristic,
   BleDevice,
   CharacteristicNotification,
-  AdapterState,
 } from '../types/ble';
-import { ConnectionState } from '../types/ble';
+import { ConnectionState, AdapterState } from '../types/ble';
 import { CommandQueue } from './command-queue';
 import { ConnectionStateMachine } from './state-machine';
 import { ReconnectionManager } from './reconnection';
@@ -103,6 +102,18 @@ export class PeripheralManager {
 
     this.setupNativeListeners();
     this.initialized = true;
+
+    // Ensure adapter state listeners receive an initial value at startup.
+    try {
+      const stateResult = (await BleManager.checkState()) as unknown;
+      this.emitAdapterStateChange(stateResult);
+    } catch (error) {
+      this.emit(
+        'onError',
+        error instanceof Error ? error : new Error(String(error)),
+        'checkState'
+      );
+    }
   }
 
   /**
@@ -463,6 +474,16 @@ export class PeripheralManager {
   private setupNativeListeners(): void {
     if (!this.eventEmitter) return;
 
+    // BLE adapter state changes (powered on/off, unauthorized, etc.)
+    this.nativeSubscriptions.push(
+      this.eventEmitter.addListener(
+        'BleManagerDidUpdateState',
+        (data: { state?: string } | string) => {
+          this.emitAdapterStateChange(data);
+        }
+      )
+    );
+
     // Device discovered during scan
     this.nativeSubscriptions.push(
       this.eventEmitter.addListener(
@@ -643,6 +664,48 @@ export class PeripheralManager {
     this.emit('onConnectionStateChange', deviceId, state, prevState);
   }
 
+  private emitAdapterStateChange(data: unknown): void {
+    const rawState =
+      typeof data === 'string'
+        ? data
+        : data &&
+            typeof data === 'object' &&
+            'state' in data &&
+            typeof (data as { state?: unknown }).state === 'string'
+          ? (data as { state: string }).state
+          : null;
+
+    if (!rawState) return;
+
+    const normalized = this.normalizeAdapterState(rawState);
+    this.emit('onAdapterStateChange', normalized);
+  }
+
+  private normalizeAdapterState(rawState: string): AdapterState {
+    const value = rawState.toLowerCase();
+    switch (value) {
+      case 'on':
+      case 'powered_on':
+      case 'poweredon':
+        return AdapterState.PoweredOn;
+      case 'off':
+      case 'powered_off':
+      case 'poweredoff':
+        return AdapterState.PoweredOff;
+      case 'unauthorized':
+        return AdapterState.Unauthorized;
+      case 'unsupported':
+        return AdapterState.Unsupported;
+      case 'resetting':
+      case 'turning_on':
+      case 'turning_off':
+        return AdapterState.Resetting;
+      case 'unknown':
+      default:
+        return AdapterState.Unknown;
+    }
+  }
+
   private emit<K extends EventKey>(
     event: K,
     ...args: Parameters<EventCallback<K>>
@@ -663,7 +726,7 @@ export class PeripheralManager {
  * Singleton instance. Import and use directly:
  *
  * ```ts
- * import { peripheralManager } from '@peripheral/ble-core';
+ * import { peripheralManager } from '@peripherals/ble-core';
  *
  * await peripheralManager.initialize();
  * const device = await peripheralManager.connect(deviceId);

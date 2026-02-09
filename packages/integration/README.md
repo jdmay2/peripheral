@@ -1,10 +1,10 @@
-# @peripheral/integration
+# @peripherals/integration
 
 Glue layer connecting BLE sensors to gesture recognition to smart home actions. One hook to go from raw IMU data to toggling your lights.
 
 ## Why this exists
 
-Wiring `@peripheral/ble-core` → `@peripheral/gesture-engine` → `@peripheral/smart-home` by hand means managing three lifecycles, parsing raw BLE bytes into IMU samples, feeding them to the gesture engine, mapping recognized gestures to Home Assistant service calls, and handling reconnection. This package does all of it.
+Wiring `@peripherals/ble-core` → `@peripherals/gesture-engine` → `@peripherals/smart-home` by hand means managing three lifecycles, parsing raw BLE bytes into IMU samples, feeding them to the gesture engine, mapping recognized gestures to Home Assistant service calls, and handling reconnection. This package does all of it.
 
 **What you get:**
 
@@ -12,25 +12,26 @@ Wiring `@peripheral/ble-core` → `@peripheral/gesture-engine` → `@peripheral/
 - **IMU parsers** — factories for 3-axis, 6-axis, and 9-axis packed int16 LE sensor data
 - **Gesture-action bridge** — map gestures to Home Assistant service calls with cooldowns and conditional logic
 - **Action history** — track recent actions with execution latency metrics
-- **Zero required dependencies** — all three `@peripheral/*` packages are optional peers; install only what you need
+- **Zero required dependencies** — all three `@peripherals/*` packages are optional peers; install only what you need
 
 ## Install
 
 ```bash
 # Full pipeline (BLE → gestures → smart home)
-npm install @peripheral/integration @peripheral/ble-core @peripheral/smart-home @peripheral/gesture-engine
+npm install @peripherals/integration @peripherals/ble-core @peripherals/smart-home @peripherals/gesture-engine
 
 # Just BLE → gestures (no smart home)
-npm install @peripheral/integration @peripheral/ble-core @peripheral/gesture-engine
+npm install @peripherals/integration @peripherals/ble-core @peripherals/gesture-engine
 
 # Just gestures → smart home (no BLE)
-npm install @peripheral/integration @peripheral/gesture-engine @peripheral/smart-home
+npm install @peripherals/integration @peripherals/gesture-engine @peripherals/smart-home
 ```
 
 ## Quick start
 
 ```tsx
-import { useIMUGestureControl } from '@peripheral/integration';
+import { useIMUGestureControl } from '@peripherals/integration';
+import { EngineState } from '@peripherals/gesture-engine';
 
 function GestureControlledHome() {
   const {
@@ -39,7 +40,6 @@ function GestureControlledHome() {
     engineState,
     lastGesture,
     lastAction,
-    recentActions,
     start,
     stop,
     error,
@@ -59,9 +59,17 @@ function GestureControlledHome() {
 
   return (
     <View>
-      <Button title={engineState === 'running' ? 'Stop' : 'Start'} onPress={engineState === 'running' ? stop : start} />
+      <Button
+        title={engineState === EngineState.Listening ? 'Stop' : 'Start'}
+        onPress={engineState === EngineState.Listening ? stop : start}
+      />
       {lastGesture && <Text>Last gesture: {lastGesture}</Text>}
-      {lastAction && <Text>Last action: {lastAction.domain}.{lastAction.service}</Text>}
+      {lastAction && (
+        <Text>
+          Last action: {lastAction.serviceCall.domain}.{lastAction.serviceCall.service}
+        </Text>
+      )}
+      <Text>Executed actions: {bridgeStatus.actionsExecuted}</Text>
     </View>
   );
 }
@@ -72,7 +80,7 @@ function GestureControlledHome() {
 Factory functions for common packed int16 little-endian IMU sensor formats:
 
 ```ts
-import { createIMU6AxisParser, createIMU3AxisParser, createIMU9AxisParser } from '@peripheral/integration';
+import { createIMU6AxisParser, createIMU3AxisParser, createIMU9AxisParser } from '@peripherals/integration';
 
 // MPU-6050 default: 12 bytes → ax, ay, az, gx, gy, gz
 const parse6Axis = createIMU6AxisParser();
@@ -96,10 +104,10 @@ const parser = createIMU6AxisParser(4.0, 500.0);
 For non-React usage or more control:
 
 ```ts
-import { createIMUPipeline, createGestureActionBridge } from '@peripheral/integration';
-import { peripheralManager } from '@peripheral/ble-core';
-import { GestureEngine } from '@peripheral/gesture-engine';
-import { HomeAssistantClient } from '@peripheral/smart-home';
+import { createIMUPipeline, createGestureActionBridge } from '@peripherals/integration';
+import { peripheralManager } from '@peripherals/ble-core';
+import { GestureEngine } from '@peripherals/gesture-engine';
+import { HomeAssistantClient } from '@peripherals/smart-home';
 
 const engine = new GestureEngine();
 const haClient = new HomeAssistantClient({ url, auth });
@@ -119,8 +127,13 @@ const bridge = createGestureActionBridge(engine, haClient, {
   globalCooldownMs: 1000,
 });
 
-await pipeline.start();
-bridge.start();
+// Pipeline auto-subscribes when the BLE device reaches Ready state.
+// The bridge starts listening immediately after creation.
+pipeline.resume();
+
+// Cleanup
+bridge.destroy();
+pipeline.destroy();
 ```
 
 ## Conditional actions
@@ -141,16 +154,16 @@ const actionMap = {
 The bridge tracks the last 20 actions with timestamps and execution latency:
 
 ```ts
-const { recentActions, lastActionExecutionMs } = useIMUGestureControl(config);
+const { bridgeStatus } = useIMUGestureControl(config);
 
-// recentActions: Array<{ gestureId, action, timestamp, executionMs }>
-// lastActionExecutionMs: number | null
+// bridgeStatus.recentActions: Array<{ gestureId, serviceCall, timestamp, success }>
+// bridgeStatus.lastActionExecutionMs: number | null
 ```
 
 ## Requirements
 
 - React Native ≥ 0.73
-- At least one of: `@peripheral/ble-core`, `@peripheral/gesture-engine`, `@peripheral/smart-home`
+- At least one of: `@peripherals/ble-core`, `@peripherals/gesture-engine`, `@peripherals/smart-home`
 - See each sibling package for their specific requirements
 
 ## License

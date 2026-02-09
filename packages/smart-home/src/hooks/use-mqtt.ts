@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { MQTTClient } from '../clients/mqtt';
 import type { MQTTConnectionConfig, MQTTConnectionState, MQTTMessage } from '../types';
 
 interface UseMQTTReturn {
-  /** The MQTT client instance. Stable reference. */
+  /** The MQTT client instance. Stable until config changes. */
   client: MQTTClient;
   /** Current connection state. */
   connectionState: MQTTConnectionState;
@@ -54,18 +54,23 @@ interface UseMQTTReturn {
  * ```
  */
 export function useMQTT(config: MQTTConnectionConfig): UseMQTTReturn {
-  const clientRef = useRef<MQTTClient | null>(null);
+  const configSignature = useMemo(() => JSON.stringify(config), [config]);
+  const client = useMemo(
+    () =>
+      new MQTTClient(
+        JSON.parse(configSignature) as MQTTConnectionConfig,
+      ),
+    [configSignature],
+  );
   const [connectionState, setConnectionState] = useState<MQTTConnectionState>(
     'disconnected' as MQTTConnectionState,
   );
   const [error, setError] = useState<Error | null>(null);
 
-  if (!clientRef.current) {
-    clientRef.current = new MQTTClient(config);
-  }
-  const client = clientRef.current;
-
   useEffect(() => {
+    setConnectionState(client.connectionState);
+    setError(null);
+
     const unsubState = client.on('connectionStateChanged', (state) => {
       setConnectionState(state);
     });
@@ -81,7 +86,7 @@ export function useMQTT(config: MQTTConnectionConfig): UseMQTTReturn {
       unsubError();
       client.disconnect();
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client]);
 
   const publish = useCallback(
     (

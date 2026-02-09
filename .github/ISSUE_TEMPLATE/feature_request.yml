@@ -8,10 +8,10 @@ body:
       label: Package
       description: Which package does this relate to?
       options:
-        - "@peripheral/ble-core"
-        - "@peripheral/smart-home"
-        - "@peripheral/gesture-engine"
-        - "@peripheral/integration"
+        - "@peripherals/ble-core"
+        - "@peripherals/smart-home"
+        - "@peripherals/gesture-engine"
+        - "@peripherals/integration"
         - "Monorepo / Build tooling"
         - "New package"
     validations:

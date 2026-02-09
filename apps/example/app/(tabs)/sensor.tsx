@@ -5,14 +5,14 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { useDevice, useCharacteristic } from '@peripheral/ble-core';
+import { useDevice, useCharacteristic } from '@peripherals/ble-core';
 import {
   useGestureEngine,
   useActivityContext,
   useSensorVisualization,
-} from '@peripheral/gesture-engine';
-import type { IMUSample } from '@peripheral/gesture-engine';
-import { createIMU6AxisParser } from '@peripheral/integration';
+} from '@peripherals/gesture-engine';
+import type { IMUSample } from '@peripherals/gesture-engine';
+import { createIMU6AxisParser } from '@peripherals/integration';
 
 const defaultParser = createIMU6AxisParser();
 

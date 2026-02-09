@@ -64,6 +64,7 @@ export function useCharacteristic<T = unknown>(
     const unsubRaw = peripheralManager.on('onRawNotification', (notif) => {
       if (
         notif.deviceId !== refs.current.deviceId ||
+        !uuidsMatch(notif.serviceUUID, refs.current.serviceUUID) ||
         !uuidsMatch(notif.characteristicUUID, refs.current.characteristicUUID)
       ) {
         return;

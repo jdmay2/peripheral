@@ -1,5 +1,5 @@
 {
-  "extends": "@peripheral/typescript-config/react-native.json",
+  "extends": "@peripherals/typescript-config/react-native.json",
   "compilerOptions": {
     "outDir": "./lib/typescript",
     "rootDir": "."

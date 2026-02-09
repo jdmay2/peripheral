@@ -17,17 +17,19 @@
 
 ## Package(s) Affected
 
-- [ ] `@peripheral/ble-core`
-- [ ] `@peripheral/smart-home`
-- [ ] `@peripheral/gesture-engine`
-- [ ] `@peripheral/integration`
+- [ ] `@peripherals/ble-core`
+- [ ] `@peripherals/smart-home`
+- [ ] `@peripherals/gesture-engine`
+- [ ] `@peripherals/integration`
 - [ ] Monorepo / build tooling
 
 ## Checklist
 
-- [ ] `pnpm typecheck` passes with no errors
-- [ ] `pnpm build` succeeds
+- [ ] `pnpm verify:repo` passes
+- [ ] `pnpm verify:pack` passes
+- [ ] `pnpm verify:example-config` passes
 - [ ] Tested on a physical device (required for BLE changes)
+- [ ] Permission flows validated (see `docs/permissions.md`) for BLE-related changes
 - [ ] Changeset added for user-facing changes (`pnpm changeset`)
 - [ ] README updated if public API changed
 - [ ] No `any` types introduced
