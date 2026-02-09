@@ -113,6 +113,7 @@ Releases are automated with Changesets via GitHub Actions.
 3. Merging the release PR publishes new versions to npm.
 
 Publishing from CI requires a repository secret named `NPM_TOKEN` (npm automation token with publish access for the `@peripherals` scope).
+If `NPM_TOKEN` is not set, the release workflow will skip publishing.
 
 ## Reporting Issues
 

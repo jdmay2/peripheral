@@ -23,6 +23,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo build && changeset publish",
+    "release:ci": "node scripts/release-ci.js",
     "release:dry-run": "turbo build && changeset publish --dry-run"
   },
   "devDependencies": {
