@@ -2,8 +2,8 @@
 
 ## Supported Versions
 
-| Version | Supported |
-|---------|-----------|
+| Version | Supported                                           |
+| ------- | --------------------------------------------------- |
 | 0.x     | Yes -- security fixes applied to the latest release |
 
 As this project is in active pre-1.0 development, security fixes are applied to the latest release only. There are no backport branches at this time.
@@ -15,6 +15,7 @@ If you discover a security vulnerability, please report it responsibly. Do not o
 **Email:** Send details to the maintainer via the email address listed on the [GitHub profile](https://github.com/jdmay2).
 
 **Include:**
+
 - A description of the vulnerability
 - Steps to reproduce or a proof of concept
 - The affected package(s) and version(s)
