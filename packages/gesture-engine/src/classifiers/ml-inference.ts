@@ -55,11 +55,15 @@ export interface MLInferenceConfig {
 // ─── Lazy model loading ──────────────────────────────────────────────────────
 
 type TFLiteModel = {
-  runSync: (inputs: any[]) => any[];
+  runSync: (inputs: unknown[]) => unknown[];
+};
+
+type ONNXOutputTensor = {
+  data: ArrayLike<number>;
 };
 
 type ONNXSession = {
-  run: (feeds: Record<string, any>) => Promise<Record<string, any>>;
+  run: (feeds: Record<string, unknown>) => Promise<Record<string, ONNXOutputTensor>>;
 };
 
 async function loadTFLiteModel(path: string, useGPU: boolean): Promise<TFLiteModel> {
@@ -284,9 +288,21 @@ export class MLClassifier {
     // react-native-fast-tflite runSync takes array of typed arrays
     const outputs = this.tfliteModel.runSync([input]);
     const output = outputs[0];
+    if (output == null) {
+      throw new Error('TFLite model returned no outputs');
+    }
 
     // Convert to regular number array
-    return Array.from(output instanceof Float32Array ? output : new Float32Array(output));
+    if (output instanceof Float32Array) {
+      return Array.from(output);
+    }
+    if (ArrayBuffer.isView(output)) {
+      return Array.from(output as unknown as ArrayLike<number>);
+    }
+    if (Array.isArray(output)) {
+      return output.map((value) => Number(value));
+    }
+    throw new Error('Unsupported TFLite output type');
   }
 
   private async runONNX(input: Float32Array): Promise<number[]> {
@@ -300,7 +316,11 @@ export class MLClassifier {
 
     // Get first output tensor
     const outputKey = Object.keys(result)[0]!;
-    const outputData = result[outputKey].data;
+    const output = result[outputKey];
+    if (!output) {
+      throw new Error('ONNX model returned no outputs');
+    }
+    const outputData = output.data;
     return Array.from(outputData);
   }
 

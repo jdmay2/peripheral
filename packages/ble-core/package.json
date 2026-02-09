@@ -33,7 +33,7 @@
     "clean": "rm -rf lib",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "keywords": [
     "react-native",
@@ -89,7 +89,12 @@
           "esm": true
         }
       ],
-      "typescript"
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
     ]
   }
 }

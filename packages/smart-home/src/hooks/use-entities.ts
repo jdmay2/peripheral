@@ -60,6 +60,11 @@ export function useEntities(
   client: HomeAssistantClient,
   options?: UseEntitiesOptions,
 ): UseEntitiesReturn {
+  const domain = options?.domain;
+  const areaId = options?.areaId;
+  const entityIds = options?.entityIds;
+  const filter = options?.filter;
+
   const [allEntities, setAllEntities] = useState<Map<string, SmartHomeEntity>>(
     () => client.getEntities(),
   );
@@ -80,10 +85,10 @@ export function useEntities(
 
     for (const entity of allEntities.values()) {
       // Apply filters
-      if (options?.domain && entity.domain !== options.domain) continue;
-      if (options?.areaId && entity.areaId !== options.areaId) continue;
-      if (options?.entityIds && !options.entityIds.includes(entity.entityId)) continue;
-      if (options?.filter && !options.filter(entity)) continue;
+      if (domain && entity.domain !== domain) continue;
+      if (areaId && entity.areaId !== areaId) continue;
+      if (entityIds && !entityIds.includes(entity.entityId)) continue;
+      if (filter && !filter(entity)) continue;
 
       entities.push(entity);
     }
@@ -92,7 +97,7 @@ export function useEntities(
     entities.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName));
 
     return entities;
-  }, [allEntities, options?.domain, options?.areaId, options?.entityIds, options?.filter]);
+  }, [allEntities, domain, areaId, entityIds, filter]);
 
   const devices = useMemo(
     () => filtered.map((e) => createDevice(e)),

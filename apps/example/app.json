@@ -28,7 +28,7 @@
         "react-native-ble-manager",
         {
           "isBackgroundEnabled": true,
-          "modes": ["peripheral", "central"],
+          "modes": ["central"],
           "bluetoothAlwaysPermission": "This app uses Bluetooth to connect to BLE sensors."
         }
       ]

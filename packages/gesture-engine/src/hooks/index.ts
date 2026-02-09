@@ -5,7 +5,7 @@
  * recording, activity context, and gesture library management.
  */
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type {
   GestureEngineConfig,
   RecognitionResult,
@@ -124,6 +124,8 @@ export function useGestureRecognition(
   const [needsRecalibration, setNeedsRecalibration] = useState(false);
 
   const maxHistory = options?.maxHistory ?? 50;
+  const onGesture = options?.onGesture;
+  const onResult = options?.onResult;
 
   useEffect(() => {
     if (!engine) return;
@@ -131,21 +133,21 @@ export function useGestureRecognition(
     const unsubs = [
       engine.on('gesture', (result) => {
         setLastGesture(result);
-        options?.onGesture?.(result);
+        onGesture?.(result);
       }),
       engine.on('result', (result) => {
         setAllResults((prev) => {
           const next = [result, ...prev];
           return next.length > maxHistory ? next.slice(0, maxHistory) : next;
         });
-        options?.onResult?.(result);
+        onResult?.(result);
       }),
       engine.on('armedStateChanged', setArmedState),
       engine.on('recalibrationNeeded', () => setNeedsRecalibration(true)),
     ];
 
     return () => unsubs.forEach((u) => u());
-  }, [engine, maxHistory, options?.onGesture, options?.onResult]);
+  }, [engine, maxHistory, onGesture, onResult]);
 
   const reportFalsePositive = useCallback(
     (gestureId: string) => {

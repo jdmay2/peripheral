@@ -4,6 +4,8 @@
 
 import type { IMUSample, RecognitionResult, GestureEngineConfig, EngineState } from '@peripheral/gesture-engine';
 import type { ServiceCall, HAConnectionConfig } from '@peripheral/smart-home';
+import type { GestureEngine } from '@peripheral/gesture-engine';
+import type { HomeAssistantClient } from '@peripheral/smart-home';
 
 // ─── IMU Pipeline ────────────────────────────────────────────────────────────
 
@@ -142,9 +144,9 @@ export interface IMUGestureControlResult {
   /** Update the action map */
   updateActionMap: (map: GestureActionMap) => void;
   /** The gesture engine instance for direct access */
-  engine: import('@peripheral/gesture-engine').GestureEngine;
+  engine: GestureEngine;
   /** The HA client instance for direct access */
-  haClient: import('@peripheral/smart-home').HomeAssistantClient | null;
+  haClient: HomeAssistantClient | null;
   /** Error from any subsystem */
   error: Error | null;
 }

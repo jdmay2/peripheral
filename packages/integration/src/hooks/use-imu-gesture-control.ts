@@ -4,7 +4,7 @@
  * Manages the full pipeline lifecycle in a single hook.
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { peripheralManager, ConnectionState } from '@peripheral/ble-core';
 import { GestureEngine } from '@peripheral/gesture-engine';
 import type { RecognitionResult, EngineState } from '@peripheral/gesture-engine';
@@ -65,17 +65,62 @@ export function useIMUGestureControl(
     engineRef.current = new GestureEngine(config.engineConfig);
   }
   const engine = engineRef.current;
+  const haConfig = config.haConfig;
+  const haUrl = haConfig?.url;
+  const haAuthType = haConfig?.auth.type;
+  const haLongLivedToken =
+    haConfig?.auth.type === 'longLivedToken' ? haConfig.auth.token : undefined;
+  const haAccessToken =
+    haConfig?.auth.type === 'oauth2' ? haConfig.auth.accessToken : undefined;
+  const haRefreshToken =
+    haConfig?.auth.type === 'oauth2' ? haConfig.auth.refreshToken : undefined;
+  const haAutoReconnect = haConfig?.autoReconnect;
+  const haTimeout = haConfig?.timeout;
+
+  const normalizedHAConfig = useMemo(() => {
+    if (!haUrl || !haAuthType) return null;
+
+    if (haAuthType === 'longLivedToken') {
+      if (!haLongLivedToken) return null;
+      return {
+        url: haUrl,
+        auth: { type: 'longLivedToken' as const, token: haLongLivedToken },
+        autoReconnect: haAutoReconnect,
+        timeout: haTimeout,
+      };
+    }
+
+    if (!haAccessToken) return null;
+    return {
+      url: haUrl,
+      auth: {
+        type: 'oauth2' as const,
+        accessToken: haAccessToken,
+        refreshToken: haRefreshToken,
+      },
+      autoReconnect: haAutoReconnect,
+      timeout: haTimeout,
+    };
+  }, [
+    haUrl,
+    haAuthType,
+    haLongLivedToken,
+    haAccessToken,
+    haRefreshToken,
+    haAutoReconnect,
+    haTimeout,
+  ]);
 
   // ─── Initialize HA client ───────────────────────────────────────────────
 
   useEffect(() => {
-    if (!config.haConfig) return;
+    if (!normalizedHAConfig) return;
 
-    const client = new HomeAssistantClient(config.haConfig);
+    const client = new HomeAssistantClient(normalizedHAConfig);
     haClientRef.current = client;
 
     const unsubState = client.on('connectionStateChanged', (state) => {
-      setIsHAConnected(state === ('connected' as any));
+      setIsHAConnected(state === 'connected');
     });
     const unsubError = client.on('error', setError);
 
@@ -87,7 +132,7 @@ export function useIMUGestureControl(
       client.disconnect();
       haClientRef.current = null;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- connect once on mount
+  }, [normalizedHAConfig]);
 
   // ─── Track engine state ─────────────────────────────────────────────────
 

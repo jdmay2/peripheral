@@ -13,7 +13,6 @@
 import type {
   IMUSample,
   IMUWindow,
-  IMUAxes,
   GestureEngineConfig,
   GestureClass,
   GestureDefinition,

@@ -1,6 +1,6 @@
-const { FlatCompat } = require("@eslint/eslintrc");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const tsParser = require("@typescript-eslint/parser");
+const reactHooksPlugin = require("eslint-plugin-react-hooks");
 
 /** @type {import('eslint').Linter.Config[]} */
 module.exports = [
@@ -14,6 +14,7 @@ module.exports = [
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
+      "react-hooks": reactHooksPlugin,
     },
     rules: {
       "@typescript-eslint/no-unused-vars": [
@@ -21,7 +22,9 @@ module.exports = [
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/consistent-type-imports": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },

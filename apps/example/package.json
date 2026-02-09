@@ -13,20 +13,20 @@
   "dependencies": {
     "@peripheral/ble-core": "workspace:*",
     "@peripheral/gesture-engine": "workspace:*",
-    "@peripheral/smart-home": "workspace:*",
     "@peripheral/integration": "workspace:*",
+    "@peripheral/smart-home": "workspace:*",
     "expo": "~54.0.0",
-    "expo-router": "~4.0.0",
-    "expo-status-bar": "~2.0.0",
-    "react": "^19.0.0",
-    "react-native": "^0.79.0",
+    "expo-router": "~6.0.23",
+    "expo-status-bar": "~3.0.9",
+    "react": "^19.1.0",
+    "react-native": "^0.81.5",
     "react-native-ble-manager": "^12.4.4",
     "react-native-safe-area-context": "^5.0.0",
-    "react-native-screens": "^4.0.0"
+    "react-native-screens": "^4.16.0"
   },
   "devDependencies": {
     "@peripheral/typescript-config": "workspace:*",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.1.17",
     "typescript": "^5.9.3"
   }
 }

@@ -194,7 +194,7 @@ export class HomeAssistantRest {
         method: 'GET',
         headers: this.headers(),
         // AbortController.signal types clash between DOM and RN globals
-        signal: controller.signal as any,
+        signal: controller.signal as unknown as NonNullable<RequestInit['signal']>,
       });
 
       if (!res.ok) {
@@ -223,7 +223,7 @@ export class HomeAssistantRest {
         headers: this.headers(),
         body: JSON.stringify(body),
         // AbortController.signal types clash between DOM and RN globals
-        signal: controller.signal as any,
+        signal: controller.signal as unknown as NonNullable<RequestInit['signal']>,
       });
 
       if (!res.ok) {

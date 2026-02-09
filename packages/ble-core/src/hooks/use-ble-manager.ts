@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { PermissionsAndroid, Platform } from 'react-native';
 import type { BleManagerOptions, AdapterState } from '../types/ble';
 import { peripheralManager } from '../core/manager';
 
@@ -11,6 +12,34 @@ export interface UseBleManagerResult {
   error: Error | null;
   /** Manually re-initialize if needed */
   reinitialize: () => Promise<void>;
+}
+
+async function requestAndroidBlePermissions(): Promise<void> {
+  if (Platform.OS !== 'android') return;
+
+  const sdkInt =
+    typeof Platform.Version === 'number'
+      ? Platform.Version
+      : Number(Platform.Version);
+
+  const permissions =
+    sdkInt >= 31
+      ? [
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        ]
+      : [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
+
+  const result = await PermissionsAndroid.requestMultiple(permissions);
+  const denied = permissions.filter(
+    (permission) => result[permission] !== PermissionsAndroid.RESULTS.GRANTED
+  );
+
+  if (denied.length > 0) {
+    throw new Error(
+      `Required BLE permissions were not granted: ${denied.join(', ')}`
+    );
+  }
 }
 
 /**
@@ -35,6 +64,9 @@ export function useBleManager(
   const initialize = useCallback(async () => {
     try {
       setError(null);
+      if (optionsRef.current?.requestPermissionsOnInitialize !== false) {
+        await requestAndroidBlePermissions();
+      }
       await peripheralManager.initialize(optionsRef.current);
       setIsReady(true);
     } catch (err) {

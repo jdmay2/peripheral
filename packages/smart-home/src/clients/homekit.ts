@@ -63,7 +63,7 @@ import type {
   HKConnectionState,
   HomeKitNativeModule,
 } from '../types';
-import { EventEmitter, type Unsubscribe } from '../utils/event-emitter';
+import { EventEmitter } from '../utils/event-emitter';
 
 // ─── Events ──────────────────────────────────────────────────────────────────
 
@@ -259,13 +259,14 @@ export class HomeKitClient extends EventEmitter<HomeKitClientEvents> {
 
   private async callNative<T>(method: string, ...args: unknown[]): Promise<T> {
     const mod = this.requireNative();
-    const fn = (mod as any)[method];
-    if (typeof fn !== 'function') {
+    const maybeFn = (mod as unknown as Record<string, unknown>)[method];
+    if (typeof maybeFn !== 'function') {
       throw new Error(
         `HomeKit native module does not implement "${method}". ` +
           'Ensure your expo-homekit module is up to date.',
       );
     }
+    const fn = maybeFn as (this: HomeKitNativeModule, ...fnArgs: unknown[]) => Promise<T>;
     try {
       return await fn.call(mod, ...args);
     } catch (err) {

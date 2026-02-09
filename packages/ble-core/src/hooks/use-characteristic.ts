@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { peripheralManager } from '../core/manager';
 import { toDataView } from '../utils/bytes';
-import { autoParse, hasParser } from '../parsers/registry';
+import { autoParse } from '../parsers/registry';
 import { uuidsMatch } from '../types/gatt';
 
 export interface UseCharacteristicOptions {

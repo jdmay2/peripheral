@@ -56,6 +56,7 @@ import type {
   HADeviceEntry,
   HAEntityEntry,
   HAConfig,
+  HAState,
   HAServiceDomain,
   SmartHomeEntity,
   SmartHomeArea,
@@ -65,7 +66,7 @@ import type {
   ServiceTarget,
 } from '../types';
 import { EventEmitter, type Unsubscribe } from '../utils/event-emitter';
-import { haStateToEntity, parseStateChangedEvent } from '../utils/entities';
+import { haStateToEntity } from '../utils/entities';
 
 // ─── Events ──────────────────────────────────────────────────────────────────
 
@@ -113,7 +114,7 @@ export class HomeAssistantClient extends EventEmitter<HAClientEvents> {
     this.setConnectionState('connecting' as HAConnectionState);
 
     try {
-      let auth;
+      let auth: unknown;
       if (this.config.auth.type === 'longLivedToken') {
         auth = createLongLivedTokenAuth(this.config.url, this.config.auth.token);
       } else {
@@ -127,15 +128,17 @@ export class HomeAssistantClient extends EventEmitter<HAClientEvents> {
             // OAuth2 refresh would go here
             throw new Error('OAuth2 token refresh not yet implemented');
           },
-        } as any;
+        };
       }
 
       this.setConnectionState('authenticating' as HAConnectionState);
 
-      const connection = await createConnection({ auth });
+      const connection = await createConnection(
+        { auth } as Parameters<typeof createConnection>[0]
+      );
 
       this.connection = connection;
-      this._haVersion = (connection as any).haVersion ?? null;
+      this._haVersion = (connection as unknown as { haVersion?: string }).haVersion ?? null;
 
       // Set up reconnection handlers
       connection.addEventListener('ready', () => {
@@ -244,7 +247,7 @@ export class HomeAssistantClient extends EventEmitter<HAClientEvents> {
       domain,
       service,
       options?.serviceData,
-      target as any,
+      target as unknown as Record<string, unknown> | undefined,
     );
   }
 
@@ -320,7 +323,7 @@ export class HomeAssistantClient extends EventEmitter<HAClientEvents> {
   async fetchAllStates(): Promise<SmartHomeEntity[]> {
     this.requireConnection();
     const states = await getStates(this.connection!);
-    return states.map((s: any) => haStateToEntity(s as any));
+    return states.map((s) => haStateToEntity(s as unknown as HAState));
   }
 
   // ─── WebSocket commands ─────────────────────────────────────────────────
@@ -333,7 +336,7 @@ export class HomeAssistantClient extends EventEmitter<HAClientEvents> {
     this.requireConnection();
 
     const unsub = await this.connection!.subscribeEvents(
-      (event: any) => callback(event.data),
+      (event: { data: Record<string, unknown> }) => callback(event.data),
       eventType,
     );
 
@@ -348,7 +351,7 @@ export class HomeAssistantClient extends EventEmitter<HAClientEvents> {
     this.requireConnection();
 
     const unsub = await this.connection!.subscribeMessage(
-      (msg: any) => callback(msg),
+      (msg: Record<string, unknown>) => callback(msg),
       { type: 'subscribe_trigger', trigger },
     );
 
@@ -425,7 +428,7 @@ export class HomeAssistantClient extends EventEmitter<HAClientEvents> {
     });
 
     // subscribeEntities returns an unsubscribe function directly
-    this.entitiesUnsubscribe = unsub as any;
+    this.entitiesUnsubscribe = unsub as Unsubscribe;
   }
 
   private hassEntityToSmartHome(hassEntity: HassEntity): SmartHomeEntity {

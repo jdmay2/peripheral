@@ -175,6 +175,8 @@ export interface BleManagerOptions {
   showAlert?: boolean;
   /** Force using legacy scanning on Android (default: false) */
   forceLegacy?: boolean;
+  /** Request required Android runtime permissions before initialize (default: true) */
+  requestPermissionsOnInitialize?: boolean;
 }
 
 /** Event types emitted by the BLE manager */

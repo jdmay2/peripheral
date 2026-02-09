@@ -66,7 +66,29 @@ interface MQTTClientEvents {
 
 // ─── Lazy mqtt.js import ─────────────────────────────────────────────────────
 
-type MqttClient = any;
+type MqttPacketLike = {
+  qos?: 0 | 1 | 2;
+  retain?: boolean;
+  properties?: MQTTMessage['properties'];
+};
+
+type MqttClient = {
+  on(event: 'connect' | 'reconnect' | 'close', handler: () => void): void;
+  on(event: 'error', handler: (err: Error) => void): void;
+  on(
+    event: 'message',
+    handler: (topic: string, payload: Buffer, packet: MqttPacketLike) => void,
+  ): void;
+  subscribe(topic: string, options: { qos: 0 | 1 | 2 }): void;
+  publish(
+    topic: string,
+    payload: string,
+    options: { qos: 0 | 1 | 2; retain: boolean },
+  ): void;
+  unsubscribe(topic: string): void;
+  end(force: boolean, opts: Record<string, unknown>, cb: () => void): void;
+};
+
 type MqttConnectFn = (url: string, options: Record<string, unknown>) => MqttClient;
 
 let mqttConnect: MqttConnectFn | null = null;
@@ -152,7 +174,7 @@ export class MQTTClient extends EventEmitter<MQTTClientEvents> {
         if (!this.isConnected) reject(err);
       });
 
-      client.on('message', (topic: string, payload: Buffer, packet: any) => {
+      client.on('message', (topic: string, payload: Buffer, packet: MqttPacketLike) => {
         this.handleMessage(topic, payload, packet);
       });
     });
@@ -331,7 +353,7 @@ export class MQTTClient extends EventEmitter<MQTTClientEvents> {
 
   // ─── Internals ──────────────────────────────────────────────────────────
 
-  private handleMessage(topic: string, payload: Buffer, packet: any): void {
+  private handleMessage(topic: string, payload: Buffer, packet: MqttPacketLike): void {
     const msg: MQTTMessage = {
       topic,
       payload: payload.toString('utf-8'),

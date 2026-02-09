@@ -23,15 +23,6 @@
 
 import type {
   SmartHomeEntity,
-  LightAttributes,
-  ClimateAttributes,
-  CoverAttributes,
-  FanAttributes,
-  LockAttributes,
-  MediaPlayerAttributes,
-  VacuumAttributes,
-  AlarmAttributes,
-  SensorAttributes,
 } from '../types';
 
 // ─── Base device ─────────────────────────────────────────────────────────────

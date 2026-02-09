@@ -46,6 +46,9 @@ export function useHistory(
   restConfig: HARestConfig,
   options: UseHistoryOptions,
 ): UseHistoryReturn {
+  const { url, token } = restConfig;
+  const { entityId, start, end, autoFetch, noAttributes } = options;
+
   const [history, setHistory] = useState<HAHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -54,11 +57,11 @@ export function useHistory(
     setIsLoading(true);
     setError(null);
     try {
-      const rest = new HomeAssistantRest(restConfig);
-      const result = await rest.getHistory(options.entityId, {
-        start: options.start,
-        end: options.end,
-        noAttributes: options.noAttributes !== false,
+      const rest = new HomeAssistantRest({ url, token });
+      const result = await rest.getHistory(entityId, {
+        start,
+        end,
+        noAttributes: noAttributes !== false,
       });
       // getHistory returns array of arrays (one per entity)
       setHistory(result[0] ?? []);
@@ -67,13 +70,13 @@ export function useHistory(
     } finally {
       setIsLoading(false);
     }
-  }, [restConfig.url, restConfig.token, options.entityId, options.start, options.end]);
+  }, [url, token, entityId, start, end, noAttributes]);
 
   useEffect(() => {
-    if (options.autoFetch !== false) {
+    if (autoFetch !== false) {
       fetchHistory();
     }
-  }, [fetchHistory, options.autoFetch]);
+  }, [fetchHistory, autoFetch]);
 
   return { history, isLoading, error, refresh: fetchHistory };
 }

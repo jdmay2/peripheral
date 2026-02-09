@@ -1,5 +1,4 @@
-import type { TemperatureMeasurement } from '../types/parsers';
-import { TemperatureType } from '../types/parsers';
+import type { TemperatureMeasurement, TemperatureType } from '../types/parsers';
 import { readFLOAT } from '../utils/ieee11073';
 import { parseDateTime, DATE_TIME_LENGTH } from '../utils/bytes';
 

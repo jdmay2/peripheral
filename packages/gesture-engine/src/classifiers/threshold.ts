@@ -61,7 +61,7 @@ export class ThresholdClassifier {
   classify(samples: IMUSample[]): RecognitionResult[] {
     const results: RecognitionResult[] = [];
 
-    for (const [id, gesture] of this.gestures) {
+    for (const gesture of this.gestures.values()) {
       const result = this.detectGesture(gesture, samples);
       if (result) results.push(result);
     }

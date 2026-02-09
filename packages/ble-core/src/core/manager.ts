@@ -10,7 +10,6 @@ import type {
   BleCharacteristic,
   BleDevice,
   CharacteristicNotification,
-  WriteType,
   AdapterState,
 } from '../types/ble';
 import { ConnectionState } from '../types/ble';
@@ -19,7 +18,6 @@ import { ConnectionStateMachine } from './state-machine';
 import { ReconnectionManager } from './reconnection';
 import { toDataView } from '../utils/bytes';
 import { autoParse } from '../parsers/registry';
-import { uuidsMatch } from '../types/gatt';
 
 // ─── Event types ─────────────────────────────────────────────────────────────
 

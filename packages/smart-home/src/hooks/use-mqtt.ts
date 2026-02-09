@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MQTTClient } from '../clients/mqtt';
 import type { MQTTConnectionConfig, MQTTConnectionState, MQTTMessage } from '../types';
-import type { Unsubscribe } from '../utils/event-emitter';
 
 interface UseMQTTReturn {
   /** The MQTT client instance. Stable reference. */
