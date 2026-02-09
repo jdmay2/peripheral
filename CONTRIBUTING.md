@@ -104,6 +104,16 @@ Permission and runtime validation checklist is documented in `docs/permissions.m
 4. Update the relevant package README if the public API changed.
 5. One approval is required before merging.
 
+## Releases
+
+Releases are automated with Changesets via GitHub Actions.
+
+1. Merge PRs with changesets into `main`.
+2. A "release" PR is opened automatically to bump versions and update changelogs.
+3. Merging the release PR publishes new versions to npm.
+
+Publishing from CI requires a repository secret named `NPM_TOKEN` (npm automation token with publish access for the `@peripherals` scope).
+
 ## Reporting Issues
 
 Use the issue templates when opening new issues:

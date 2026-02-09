@@ -53,6 +53,16 @@ pnpm version-packages         # Apply changesets (bump versions + changelogs)
 pnpm release                  # Build + publish to npm
 ```
 
+## Releases
+
+This repo uses [Changesets](https://github.com/changesets/changesets) for versioning and publishing.
+
+- Add a changeset in user-facing PRs: `pnpm changeset`
+- GitHub Actions will open/update a release PR (version bumps + changelogs)
+- Merging the release PR publishes to npm
+
+To enable automated publishing, add a repository secret named `NPM_TOKEN` with an npm **automation token** that has publish access to the `@peripherals` scope.
+
 ## Device Permissions
 
 See `docs/permissions.md` for iOS/Android permission requirements, runtime behavior, and manual validation scenarios.
