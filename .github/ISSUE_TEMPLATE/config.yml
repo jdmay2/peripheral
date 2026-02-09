@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and Discussion
+    url: https://github.com/jdmay2/peripheral/discussions
+    about: Ask questions and share ideas in Discussions instead of opening an issue.
