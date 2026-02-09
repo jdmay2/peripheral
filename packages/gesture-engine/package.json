@@ -47,10 +47,16 @@
     "wearable",
     "smart-ring"
   ],
+  "author": "Joseph May",
   "license": "MIT",
+  "homepage": "https://github.com/jdmay2/peripheral/tree/main/packages/gesture-engine#readme",
+  "bugs": {
+    "url": "https://github.com/jdmay2/peripheral/issues"
+  },
+  "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/peripheral/peripheral.git",
+    "url": "https://github.com/jdmay2/peripheral.git",
     "directory": "packages/gesture-engine"
   },
   "peerDependencies": {

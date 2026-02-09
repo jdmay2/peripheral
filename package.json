@@ -1,6 +1,11 @@
 {
   "name": "peripheral",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jdmay2/peripheral.git"
+  },
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
@@ -10,7 +15,8 @@
     "typecheck": "turbo typecheck",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo build && changeset publish"
+    "release": "turbo build && changeset publish",
+    "release:dry-run": "turbo build && changeset publish --dry-run"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
