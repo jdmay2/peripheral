@@ -126,6 +126,14 @@ export class FalsePositiveGuard {
   private totalRejected = 0;
   private totalFPReported = 0;
 
+  // Per-gesture metrics
+  private perGestureMetrics = new Map<string, {
+    fpCount: number;
+    tpCount: number;
+    lastFP: number;
+    lastTP: number;
+  }>();
+
   constructor(config?: Partial<FalsePositiveConfig>) {
     this.config = { ...DEFAULT_FP_CONFIG, ...config };
     this.currentCooldownMs = this.config.baseCooldownMs;
@@ -253,6 +261,14 @@ export class FalsePositiveGuard {
     this.consecutiveFalsePositives++;
     this.consecutiveTruePositives = 0;
 
+    // Update per-gesture metrics
+    const metrics = this.perGestureMetrics.get(gestureId) ?? {
+      fpCount: 0, tpCount: 0, lastFP: 0, lastTP: 0,
+    };
+    metrics.fpCount++;
+    metrics.lastFP = Date.now();
+    this.perGestureMetrics.set(gestureId, metrics);
+
     // Increase threshold for this gesture
     const current = this.getThreshold(gestureId);
     const increased = Math.min(
@@ -275,6 +291,14 @@ export class FalsePositiveGuard {
   reportTruePositive(gestureId: string): void {
     this.consecutiveTruePositives++;
     this.consecutiveFalsePositives = 0;
+
+    // Update per-gesture metrics
+    const metrics = this.perGestureMetrics.get(gestureId) ?? {
+      fpCount: 0, tpCount: 0, lastFP: 0, lastTP: 0,
+    };
+    metrics.tpCount++;
+    metrics.lastTP = Date.now();
+    this.perGestureMetrics.set(gestureId, metrics);
 
     // Relax threshold after enough consecutive TPs
     if (this.consecutiveTruePositives >= this.config.tpCountBeforeRelax) {
@@ -330,6 +354,25 @@ export class FalsePositiveGuard {
     };
   }
 
+  /** Get per-gesture false positive / true positive metrics. */
+  getGestureMetrics(gestureId: string): {
+    fpCount: number;
+    tpCount: number;
+    fpRate: number;
+    lastFP: number;
+  } | undefined {
+    const metrics = this.perGestureMetrics.get(gestureId);
+    if (!metrics) return undefined;
+
+    const total = metrics.fpCount + metrics.tpCount;
+    return {
+      fpCount: metrics.fpCount,
+      tpCount: metrics.tpCount,
+      fpRate: total > 0 ? metrics.fpCount / total : 0,
+      lastFP: metrics.lastFP,
+    };
+  }
+
   /** Reset all state and metrics. */
   reset(): void {
     this.isArmed = false;
@@ -344,6 +387,7 @@ export class FalsePositiveGuard {
     this.totalAccepted = 0;
     this.totalRejected = 0;
     this.totalFPReported = 0;
+    this.perGestureMetrics.clear();
   }
 
   // ─── Internals ──────────────────────────────────────────────────────────

@@ -335,6 +335,17 @@ export interface PLXContinuousMeasurement {
   pulseAmplitudeIndex?: number;
 }
 
+// ─── Current Time ───────────────────────────────────────────────────────────
+
+/** Re-exported from parsers/current-time for convenience */
+export type {
+  CurrentTime,
+  LocalTimeInfo,
+  ReferenceTimeInfo,
+} from '../parsers/current-time';
+
+export { DSTOffset, TimeSource } from '../parsers/current-time';
+
 // ─── Battery ─────────────────────────────────────────────────────────────────
 
 export interface BatteryLevel {

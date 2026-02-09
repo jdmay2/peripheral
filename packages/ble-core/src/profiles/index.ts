@@ -193,6 +193,63 @@ export const PulseOximeterProfile: DeviceProfile = {
   category: 'pulse_oximeter',
 };
 
+export const HealthThermometerProfile: DeviceProfile = {
+  id: 'health_thermometer',
+  name: 'Health Thermometer',
+  scanServices: [StandardServices.HealthThermometer],
+  requiredServices: [StandardServices.HealthThermometer],
+  autoSubscribe: [
+    {
+      serviceUUID: StandardServices.HealthThermometer,
+      characteristicUUID: StandardCharacteristics.TemperatureMeasurement,
+    },
+  ],
+  autoRead: [
+    {
+      serviceUUID: StandardServices.HealthThermometer,
+      characteristicUUID: StandardCharacteristics.TemperatureType,
+    },
+  ],
+  category: 'thermometer',
+};
+
+export const GlucoseMonitorProfile: DeviceProfile = {
+  id: 'glucose_monitor',
+  name: 'Glucose Monitor',
+  scanServices: [StandardServices.Glucose],
+  requiredServices: [StandardServices.Glucose],
+  autoSubscribe: [
+    {
+      serviceUUID: StandardServices.Glucose,
+      characteristicUUID: StandardCharacteristics.GlucoseMeasurement,
+    },
+  ],
+  category: 'glucose',
+};
+
+export const EnvironmentalSensorProfile: DeviceProfile = {
+  id: 'environmental_sensor',
+  name: 'Environmental Sensor',
+  scanServices: [StandardServices.EnvironmentalSensing],
+  requiredServices: [StandardServices.EnvironmentalSensing],
+  autoSubscribe: [],
+  autoRead: [
+    {
+      serviceUUID: StandardServices.EnvironmentalSensing,
+      characteristicUUID: StandardCharacteristics.Temperature,
+    },
+    {
+      serviceUUID: StandardServices.EnvironmentalSensing,
+      characteristicUUID: StandardCharacteristics.Humidity,
+    },
+    {
+      serviceUUID: StandardServices.EnvironmentalSensing,
+      characteristicUUID: StandardCharacteristics.Pressure,
+    },
+  ],
+  category: 'environmental',
+};
+
 // ─── Profile Registry ────────────────────────────────────────────────────────
 
 const profileRegistry = new Map<string, DeviceProfile>();
@@ -209,6 +266,9 @@ const builtInProfiles: DeviceProfile[] = [
   WeightScaleProfile,
   BloodPressureMonitorProfile,
   PulseOximeterProfile,
+  HealthThermometerProfile,
+  GlucoseMonitorProfile,
+  EnvironmentalSensorProfile,
 ];
 
 for (const profile of builtInProfiles) {

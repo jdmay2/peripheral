@@ -87,6 +87,37 @@ export class DTWClassifier {
     cls.isReady = cls.templates.length >= cls.minTemplates;
   }
 
+  /** Delete a specific template by index from a gesture class. */
+  deleteTemplate(gestureId: string, index: number): void {
+    const cls = this.classes.get(gestureId);
+    if (!cls) throw new Error(`Gesture class "${gestureId}" not found`);
+    if (index < 0 || index >= cls.templates.length) {
+      throw new Error(`Template index ${index} out of range (0–${cls.templates.length - 1})`);
+    }
+    cls.templates.splice(index, 1);
+    cls.isReady = cls.templates.length >= cls.minTemplates;
+  }
+
+  /** Get all templates for a gesture class. */
+  getTemplates(gestureId: string): GestureTemplate[] {
+    const cls = this.classes.get(gestureId);
+    if (!cls) return [];
+    return [...cls.templates];
+  }
+
+  /** Get the number of templates for a gesture class. */
+  getTemplateCount(gestureId: string): number {
+    return this.classes.get(gestureId)?.templates.length ?? 0;
+  }
+
+  /** Remove all templates for a gesture class without unregistering it. */
+  clearGesture(gestureId: string): void {
+    const cls = this.classes.get(gestureId);
+    if (!cls) return;
+    cls.templates = [];
+    cls.isReady = false;
+  }
+
   /**
    * Classify a candidate window against all registered gesture classes.
    *

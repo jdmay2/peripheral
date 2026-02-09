@@ -18,8 +18,10 @@ export { createGestureActionBridge } from './pipeline/gesture-action-bridge';
 export {
   createIMU6AxisParser,
   createIMU3AxisParser,
+  createIMU9AxisParser,
   parseIMU6Axis,
   parseIMU3Axis,
+  parseIMU9Axis,
 } from './parsers';
 
 // ─── Hooks ──────────────────────────────────────────────────────────────────
@@ -31,10 +33,12 @@ export type {
   IMUPipelineConfig,
   IMUPipelineStatus,
   IMUPipelineHandle,
+  GestureActionEntry,
   GestureActionMap,
   GestureActionBridgeConfig,
   GestureActionBridgeStatus,
   GestureActionBridgeHandle,
+  ActionHistoryEntry,
   IMUGestureControlConfig,
   IMUGestureControlResult,
 } from './types';

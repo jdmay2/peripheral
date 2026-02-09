@@ -36,6 +36,8 @@ export interface IMUPipelineStatus {
   totalSamplesForwarded: number;
   /** Last error encountered */
   lastError: Error | null;
+  /** Latency from last BLE notification to engine feed (ms). Null if not yet measured. */
+  lastSampleLatencyMs: number | null;
 }
 
 /** Handle returned by createIMUPipeline */
@@ -52,8 +54,23 @@ export interface IMUPipelineHandle {
 
 // ─── Gesture-Action Bridge ───────────────────────────────────────────────────
 
-/** Map of gesture IDs to smart-home service calls */
-export type GestureActionMap = Record<string, ServiceCall | ServiceCall[]>;
+/** A conditional action entry: action(s) + optional condition guard. */
+export interface GestureActionEntry {
+  /** Service call(s) to execute. */
+  action: ServiceCall | ServiceCall[];
+  /** Optional condition guard. Return false to skip execution. */
+  condition?: (gestureId: string, result: RecognitionResult) => boolean;
+}
+
+/**
+ * Map of gesture IDs to smart-home service calls.
+ *
+ * Supports three formats:
+ * - `ServiceCall` — single action
+ * - `ServiceCall[]` — multiple actions
+ * - `GestureActionEntry` — action(s) with optional condition guard
+ */
+export type GestureActionMap = Record<string, ServiceCall | ServiceCall[] | GestureActionEntry>;
 
 /** Configuration for createGestureActionBridge() */
 export interface GestureActionBridgeConfig {
@@ -73,6 +90,18 @@ export interface GestureActionBridgeConfig {
   onActionError?: (gestureId: string, error: Error) => void;
 }
 
+/** A recorded action for history tracking. */
+export interface ActionHistoryEntry {
+  /** Gesture that triggered this action. */
+  gestureId: string;
+  /** The service call that was executed. */
+  serviceCall: ServiceCall;
+  /** Timestamp of execution. */
+  timestamp: number;
+  /** Whether the action succeeded. */
+  success: boolean;
+}
+
 /** Status of the gesture-action bridge */
 export interface GestureActionBridgeStatus {
   /** Number of actions executed */
@@ -83,6 +112,10 @@ export interface GestureActionBridgeStatus {
   lastActionTimestamp: number | null;
   /** Last executed gesture ID */
   lastGestureId: string | null;
+  /** Recent action history (circular buffer, max 20 entries). */
+  recentActions: ActionHistoryEntry[];
+  /** Latency of last action execution in ms. Null if not yet measured. */
+  lastActionExecutionMs: number | null;
 }
 
 /** Handle returned by createGestureActionBridge */

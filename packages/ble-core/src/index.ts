@@ -30,6 +30,10 @@ export {
   BodySensorLocation,
   TemperatureType,
   FTMSResultCode,
+  BleErrorCode,
+  BleError,
+  DSTOffset,
+  TimeSource,
 } from './types';
 export type {
   ScanResult,
@@ -66,6 +70,9 @@ export type {
   PLXContinuousMeasurement,
   BatteryLevel,
   DeviceInformation,
+  CurrentTime,
+  LocalTimeInfo,
+  ReferenceTimeInfo,
 } from './types';
 
 // ─── Parsers ─────────────────────────────────────────────────────────────────
@@ -97,6 +104,10 @@ export {
   parseRowerData,
   parsePLXSpotCheck,
   parsePLXContinuous,
+  // Current Time Service
+  parseCurrentTime,
+  parseLocalTimeInfo,
+  parseReferenceTimeInfo,
   // FTMS control point
   FTMSOpCode,
   buildFTMSRequestControl,
@@ -122,13 +133,26 @@ export {
 } from './parsers';
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────
-export { useBleManager, useScan, useDevice, useCharacteristic } from './hooks';
+export {
+  useBleManager,
+  useScan,
+  useDevice,
+  useCharacteristic,
+  useBattery,
+  useRSSI,
+  useDeviceInfo,
+} from './hooks';
 export type {
   UseBleManagerResult,
   UseScanResult,
   UseDeviceResult,
   UseCharacteristicResult,
   UseCharacteristicOptions,
+  UseBatteryResult,
+  UseRSSIResult,
+  UseRSSIOptions,
+  SignalQuality,
+  UseDeviceInfoResult,
 } from './hooks';
 
 // ─── Profiles ────────────────────────────────────────────────────────────────
@@ -147,11 +171,15 @@ export {
   WeightScaleProfile,
   BloodPressureMonitorProfile,
   PulseOximeterProfile,
+  HealthThermometerProfile,
+  GlucoseMonitorProfile,
+  EnvironmentalSensorProfile,
 } from './profiles';
 export type { DeviceProfile, DeviceCategory } from './profiles';
 
 // ─── Utils ───────────────────────────────────────────────────────────────────
 export {
+  // Byte helpers
   toDataView,
   base64ToDataView,
   toHexString,
@@ -162,8 +190,24 @@ export {
   isUint16NotAvailable,
   isInt16NotAvailable,
   isUint8NotAvailable,
+  // IEEE 11073
   decodeSFLOAT,
   readSFLOAT,
   decodeFLOAT,
   readFLOAT,
+  // UUID validation
+  isValidUUID,
+  isShortUUID,
+  expandShortUUID,
+  shortenUUID,
+  isSigUUID,
+  // Advertising data
+  parseManufacturerData,
+  parseServiceData,
+  getAdvertisedTxPower,
+  isConnectable,
+} from './utils';
+export type {
+  ParsedManufacturerData,
+  ParsedServiceData,
 } from './utils';

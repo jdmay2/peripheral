@@ -9,6 +9,14 @@
 // ─── Core engine ─────────────────────────────────────────────────────────────
 export { GestureEngine } from './engine';
 export type { GestureEngineEvents, GestureLibraryData } from './engine';
+export { GestureSequencer } from './engine/gesture-sequencer';
+export type {
+  GestureSequenceDef,
+  SequenceRecognizedEvent,
+  SequenceProgressEvent,
+  SequenceTimeoutEvent,
+  GestureSequencerEvents,
+} from './engine/gesture-sequencer';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type {
@@ -81,4 +89,8 @@ export {
   useActivityContext,
   useGestureLibrary,
   useSensorVisualization,
+  useGestureStats,
+  useGestureCalibration,
 } from './hooks';
+export type { UseGestureStatsResult } from './hooks';
+export type { UseGestureCalibrationResult } from './hooks';

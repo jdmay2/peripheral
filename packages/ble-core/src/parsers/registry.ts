@@ -26,6 +26,7 @@ import {
   parseRowerData,
 } from './fitness-machine';
 import { parsePLXSpotCheck, parsePLXContinuous } from './pulse-oximeter';
+import { parseCurrentTime, parseLocalTimeInfo, parseReferenceTimeInfo } from './current-time';
 
 /**
  * Global parser registry.
@@ -233,6 +234,28 @@ register({
   serviceUUID: StandardServices.PulseOximeter,
   name: 'PLX Continuous Measurement',
   parse: parsePLXContinuous,
+});
+
+// Current Time Service
+register({
+  characteristicUUID: StandardCharacteristics.CurrentTime,
+  serviceUUID: StandardServices.CurrentTime,
+  name: 'Current Time',
+  parse: parseCurrentTime,
+});
+
+register({
+  characteristicUUID: StandardCharacteristics.LocalTimeInformation,
+  serviceUUID: StandardServices.CurrentTime,
+  name: 'Local Time Information',
+  parse: parseLocalTimeInfo,
+});
+
+register({
+  characteristicUUID: StandardCharacteristics.ReferenceTimeInformation,
+  serviceUUID: StandardServices.CurrentTime,
+  name: 'Reference Time Information',
+  parse: parseReferenceTimeInfo,
 });
 
 // ─── Public API ──────────────────────────────────────────────────────────────

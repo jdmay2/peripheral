@@ -1,9 +1,10 @@
 /**
  * Threshold-based classifier for simple gestures.
  *
- * Detects tap, double-tap, shake, and flick using peak detection
- * on acceleration magnitude. Requires no training — just configure
- * thresholds per gesture type.
+ * Detects tap, double-tap, shake, flick, long-press, and rotation
+ * using peak detection on acceleration magnitude and gyroscope
+ * integration. Requires no training — just configure thresholds
+ * per gesture type.
  *
  * This is Tier 1: simplest approach, zero training needed.
  */
@@ -21,10 +22,16 @@ interface ShakeState {
   lastAbove: boolean;
 }
 
+interface LongPressState {
+  startTime: number;
+  isActive: boolean;
+}
+
 export class ThresholdClassifier {
   private gestures = new Map<string, ThresholdGestureDef>();
   private tapStates = new Map<string, TapState>();
   private shakeStates = new Map<string, ShakeState>();
+  private longPressStates = new Map<string, LongPressState>();
   private pendingDoubleTaps = new Map<string, ReturnType<typeof setTimeout>>();
 
   /** Register a threshold-based gesture. */
@@ -40,6 +47,9 @@ export class ThresholdClassifier {
         lastAbove: false,
       });
     }
+    if (gesture.type === 'longPress') {
+      this.longPressStates.set(gesture.id, { startTime: 0, isActive: false });
+    }
   }
 
   /** Remove a gesture. */
@@ -47,6 +57,7 @@ export class ThresholdClassifier {
     this.gestures.delete(id);
     this.tapStates.delete(id);
     this.shakeStates.delete(id);
+    this.longPressStates.delete(id);
     const timer = this.pendingDoubleTaps.get(id);
     if (timer) clearTimeout(timer);
     this.pendingDoubleTaps.delete(id);
@@ -73,6 +84,7 @@ export class ThresholdClassifier {
   reset(): void {
     this.tapStates.forEach((s) => { s.lastTapTime = 0; s.tapCount = 0; });
     this.shakeStates.forEach((s) => { s.crossingCount = 0; s.windowStart = 0; s.lastAbove = false; });
+    this.longPressStates.forEach((s) => { s.startTime = 0; s.isActive = false; });
     for (const timer of this.pendingDoubleTaps.values()) clearTimeout(timer);
     this.pendingDoubleTaps.clear();
   }
@@ -92,6 +104,10 @@ export class ThresholdClassifier {
         return this.detectShake(gesture, samples);
       case 'flick':
         return this.detectFlick(gesture, samples);
+      case 'longPress':
+        return this.detectLongPress(gesture, samples);
+      case 'rotation':
+        return this.detectRotation(gesture, samples);
       default:
         return null;
     }
@@ -226,6 +242,76 @@ export class ThresholdClassifier {
     return null;
   }
 
+  private detectLongPress(
+    gesture: ThresholdGestureDef,
+    samples: IMUSample[],
+  ): RecognitionResult | null {
+    const state = this.longPressStates.get(gesture.id);
+    if (!state) return null;
+
+    const minDuration = gesture.minDuration ?? 500;
+
+    for (const sample of samples) {
+      const value = this.getAxisValue(sample, gesture.axis);
+
+      if (value > gesture.threshold) {
+        if (!state.isActive) {
+          // Start tracking sustained hold
+          state.isActive = true;
+          state.startTime = sample.timestamp;
+        } else if (sample.timestamp - state.startTime >= minDuration) {
+          // Held above threshold for minDuration — fire
+          const holdDuration = sample.timestamp - state.startTime;
+          state.isActive = false;
+          state.startTime = 0;
+          const confidence = Math.min(0.8 + (holdDuration / (minDuration * 3)) * 0.2, 1);
+          return this.makeResult(gesture, confidence, sample.timestamp);
+        }
+      } else {
+        // Dropped below threshold — reset
+        state.isActive = false;
+        state.startTime = 0;
+      }
+    }
+    return null;
+  }
+
+  private detectRotation(
+    gesture: ThresholdGestureDef,
+    samples: IMUSample[],
+  ): RecognitionResult | null {
+    // Rotation: integrate gyroscope angular velocity to compute cumulative angle change.
+    // Uses the Z-axis gyroscope (yaw) by default, or the configured axis.
+    const minAngle = gesture.minAngle ?? 90; // degrees
+    let cumulativeAngle = 0;
+
+    for (let i = 1; i < samples.length; i++) {
+      const curr = samples[i]!;
+      const prev = samples[i - 1]!;
+
+      // Get gyroscope value (rad/s or deg/s depending on sensor config)
+      const gyroValue = this.getGyroAxisValue(curr, gesture.axis);
+      const prevGyroValue = this.getGyroAxisValue(prev, gesture.axis);
+
+      const dt = (curr.timestamp - prev.timestamp) / 1000;
+      if (dt <= 0 || dt > 0.5) continue; // skip invalid or large gaps
+
+      // Trapezoidal integration of angular velocity
+      const avgAngularVelocity = (gyroValue + prevGyroValue) / 2;
+      cumulativeAngle += Math.abs(avgAngularVelocity) * dt;
+
+      // Check if cumulative rotation exceeds threshold
+      // threshold is used as a minimum angular velocity gate (deg/s)
+      if (Math.abs(gyroValue) < gesture.threshold) continue;
+
+      if (cumulativeAngle >= minAngle) {
+        const confidence = Math.min(0.75 + (cumulativeAngle / (minAngle * 2)) * 0.25, 1);
+        return this.makeResult(gesture, confidence, curr.timestamp);
+      }
+    }
+    return null;
+  }
+
   // ─── Helpers ────────────────────────────────────────────────────────────
 
   private getAxisValue(sample: IMUSample, axis?: string): number {
@@ -234,6 +320,19 @@ export class ThresholdClassifier {
       case 'y': return Math.abs(sample.ay);
       case 'z': return Math.abs(sample.az);
       default: return Math.sqrt(sample.ax ** 2 + sample.ay ** 2 + sample.az ** 2);
+    }
+  }
+
+  /** Get gyroscope axis value (deg/s). Falls back to 0 if gyro data not available. */
+  private getGyroAxisValue(sample: IMUSample, axis?: string): number {
+    switch (axis) {
+      case 'x': return sample.gx ?? 0;
+      case 'y': return sample.gy ?? 0;
+      case 'z': return sample.gz ?? 0;
+      default: {
+        // Default: Z-axis (yaw) for rotation detection
+        return sample.gz ?? 0;
+      }
     }
   }
 

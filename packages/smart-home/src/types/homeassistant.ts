@@ -14,6 +14,8 @@ export interface HAConnectionConfig {
   autoReconnect?: boolean;
   /** WebSocket connection timeout in ms (default: 10000) */
   timeout?: number;
+  /** Heartbeat ping interval in ms (default: undefined — no heartbeat). Use with useConnectionHealth hook for automatic health monitoring. */
+  heartbeatIntervalMs?: number;
 }
 
 export type HAAuthConfig =

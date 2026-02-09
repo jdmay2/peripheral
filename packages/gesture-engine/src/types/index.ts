@@ -289,15 +289,17 @@ export interface RecordingSession {
 export interface ThresholdGestureDef {
   id: string;
   name: string;
-  type: 'tap' | 'doubleTap' | 'shake' | 'flick' | 'rotation';
+  type: 'tap' | 'doubleTap' | 'shake' | 'flick' | 'rotation' | 'longPress';
   /** Acceleration magnitude threshold. */
   threshold: number;
   /** For doubleTap: max interval between taps in ms. */
   maxInterval?: number;
   /** For shake: minimum number of threshold crossings. */
   minCrossings?: number;
-  /** For rotation: minimum angular change in degrees. */
+  /** For rotation: minimum angular change in degrees (default: 90). */
   minAngle?: number;
+  /** For longPress: minimum hold duration in ms (default: 500). */
+  minDuration?: number;
   /** Axis to monitor: 'magnitude' | 'x' | 'y' | 'z'. Default: 'magnitude'. */
   axis?: 'magnitude' | 'x' | 'y' | 'z';
 }

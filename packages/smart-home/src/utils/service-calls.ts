@@ -345,3 +345,76 @@ export function runScript(entityId: string, variables?: Record<string, unknown>)
     serviceData: variables ? { variables } : undefined,
   };
 }
+
+// ─── Notifications ──────────────────────────────────────────────────────────
+
+export function notificationSend(
+  message: string,
+  options?: { title?: string; data?: Record<string, unknown> },
+): ServiceCall {
+  const serviceData: Record<string, unknown> = { message };
+  if (options?.title) serviceData.title = options.title;
+  if (options?.data) serviceData.data = options.data;
+  return { domain: 'notify', service: 'notify', serviceData };
+}
+
+export function persistentNotificationCreate(
+  message: string,
+  options?: { title?: string; notificationId?: string },
+): ServiceCall {
+  const serviceData: Record<string, unknown> = { message };
+  if (options?.title) serviceData.title = options.title;
+  if (options?.notificationId) serviceData.notification_id = options.notificationId;
+  return { domain: 'persistent_notification', service: 'create', serviceData };
+}
+
+export function persistentNotificationDismiss(notificationId: string): ServiceCall {
+  return {
+    domain: 'persistent_notification',
+    service: 'dismiss',
+    serviceData: { notification_id: notificationId },
+  };
+}
+
+// ─── Input helpers ──────────────────────────────────────────────────────────
+
+export function inputBooleanToggle(entityId: string): ServiceCall {
+  return { domain: 'input_boolean', service: 'toggle', target: { entityId } };
+}
+
+export function inputBooleanTurnOn(entityId: string): ServiceCall {
+  return { domain: 'input_boolean', service: 'turn_on', target: { entityId } };
+}
+
+export function inputBooleanTurnOff(entityId: string): ServiceCall {
+  return { domain: 'input_boolean', service: 'turn_off', target: { entityId } };
+}
+
+export function inputNumberSetValue(entityId: string, value: number): ServiceCall {
+  return {
+    domain: 'input_number',
+    service: 'set_value',
+    target: { entityId },
+    serviceData: { value },
+  };
+}
+
+export function inputSelectSelectOption(entityId: string, option: string): ServiceCall {
+  return {
+    domain: 'input_select',
+    service: 'select_option',
+    target: { entityId },
+    serviceData: { option },
+  };
+}
+
+// ─── Script (with variables) ────────────────────────────────────────────────
+
+export function scriptTurnOn(entityId: string, variables?: Record<string, unknown>): ServiceCall {
+  return {
+    domain: 'script',
+    service: 'turn_on',
+    target: { entityId },
+    serviceData: variables ? { variables } : undefined,
+  };
+}

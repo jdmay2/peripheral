@@ -10,5 +10,9 @@ export { parseRSCMeasurement } from './running';
 export { parseIndoorBikeData, parseTreadmillData, parseRowerData, FTMSOpCode, buildFTMSRequestControl, buildFTMSStart, buildFTMSStop, buildFTMSSetTargetPower, buildFTMSSetResistance, buildFTMSSetSimulation, parseFTMSControlPointResponse } from './fitness-machine';
 export { parsePLXSpotCheck, parsePLXContinuous } from './pulse-oximeter';
 
+// Current Time Service
+export { parseCurrentTime, parseLocalTimeInfo, parseReferenceTimeInfo, DSTOffset, TimeSource } from './current-time';
+export type { CurrentTime, LocalTimeInfo, ReferenceTimeInfo } from './current-time';
+
 // Parser registry
 export { getParser, autoParse, registerParser, getAllParsers, hasParser } from './registry';

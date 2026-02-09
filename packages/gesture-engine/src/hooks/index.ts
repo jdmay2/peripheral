@@ -2,8 +2,11 @@
  * React hooks for the gesture recognition engine.
  *
  * Provides declarative bindings for engine lifecycle, gesture recognition,
- * recording, activity context, and gesture library management.
+ * recording, activity context, gesture library management, stats, and calibration.
  */
+
+export { useGestureStats, type UseGestureStatsResult } from './use-gesture-stats';
+export { useGestureCalibration, type UseGestureCalibrationResult } from './use-gesture-calibration';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type {

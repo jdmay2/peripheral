@@ -19,7 +19,14 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "unrs-resolver"
-    ]
+    ],
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "expo-router>@expo/metro-runtime": "4.x",
+        "expo-router>expo-linking": "7.x",
+        "react-dom>react": "19.x"
+      }
+    }
   },
   "packageManager": "pnpm@10.29.2",
   "engines": {

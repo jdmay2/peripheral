@@ -547,6 +547,154 @@ export class BinarySensor extends SmartDevice {
   }
 }
 
+// ─── Scene ──────────────────────────────────────────────────────────────────
+
+export class Scene extends SmartDevice {
+  get isActive(): boolean {
+    return this.state === 'scening' || this.state === 'on';
+  }
+}
+
+// ─── Weather ────────────────────────────────────────────────────────────────
+
+export class Weather extends SmartDevice {
+  get temperature(): number | undefined {
+    return this.attr<number>('temperature');
+  }
+
+  get humidity(): number | undefined {
+    return this.attr<number>('humidity');
+  }
+
+  get pressure(): number | undefined {
+    return this.attr<number>('pressure');
+  }
+
+  get windSpeed(): number | undefined {
+    return this.attr<number>('wind_speed');
+  }
+
+  get windBearing(): number | undefined {
+    return this.attr<number>('wind_bearing');
+  }
+
+  /** Current weather condition (e.g., "sunny", "rainy", "cloudy") */
+  get condition(): string {
+    return this.state;
+  }
+
+  /** Weather forecast entries */
+  get forecast(): Array<Record<string, unknown>> {
+    return this.attr<Array<Record<string, unknown>>>('forecast') ?? [];
+  }
+}
+
+// ─── Camera ─────────────────────────────────────────────────────────────────
+
+export class Camera extends SmartDevice {
+  get isRecording(): boolean {
+    return this.state === 'recording';
+  }
+
+  get isStreaming(): boolean {
+    return this.state === 'streaming';
+  }
+
+  get isIdle(): boolean {
+    return this.state === 'idle';
+  }
+
+  get frontendStreamUrl(): string | undefined {
+    return this.attr<string>('frontend_stream_url');
+  }
+}
+
+// ─── Person ─────────────────────────────────────────────────────────────────
+
+export class Person extends SmartDevice {
+  /** Location name (e.g., "home", "work", "not_home") */
+  get location(): string {
+    return this.state;
+  }
+
+  get isHome(): boolean {
+    return this.state === 'home';
+  }
+
+  get latitude(): number | undefined {
+    return this.attr<number>('latitude');
+  }
+
+  get longitude(): number | undefined {
+    return this.attr<number>('longitude');
+  }
+
+  get gpsAccuracy(): number | undefined {
+    return this.attr<number>('gps_accuracy');
+  }
+
+  get source(): string | undefined {
+    return this.attr<string>('source');
+  }
+}
+
+// ─── Input Boolean ──────────────────────────────────────────────────────────
+
+export class InputBoolean extends SmartDevice {
+  get isOn(): boolean {
+    return this.state === 'on';
+  }
+}
+
+// ─── Input Number ───────────────────────────────────────────────────────────
+
+export class InputNumber extends SmartDevice {
+  get value(): number | undefined {
+    const n = parseFloat(this.state);
+    return Number.isFinite(n) ? n : undefined;
+  }
+
+  get min(): number | undefined {
+    return this.attr<number>('min');
+  }
+
+  get max(): number | undefined {
+    return this.attr<number>('max');
+  }
+
+  get step(): number | undefined {
+    return this.attr<number>('step');
+  }
+
+  get mode(): 'box' | 'slider' | undefined {
+    return this.attr<'box' | 'slider'>('mode');
+  }
+}
+
+// ─── Input Select ───────────────────────────────────────────────────────────
+
+export class InputSelect extends SmartDevice {
+  get selectedOption(): string {
+    return this.state;
+  }
+
+  get options(): string[] {
+    return this.attr<string[]>('options') ?? [];
+  }
+}
+
+// ─── Script ─────────────────────────────────────────────────────────────────
+
+export class Script extends SmartDevice {
+  get isRunning(): boolean {
+    return this.state === 'on';
+  }
+
+  get lastTriggered(): string | undefined {
+    return this.attr<string>('last_triggered');
+  }
+}
+
 // ─── Factory ─────────────────────────────────────────────────────────────────
 
 /**
@@ -575,7 +723,22 @@ export function createDevice(entity: SmartHomeEntity): SmartDevice {
       return new BinarySensor(entity);
     case 'sensor':
       return new Sensor(entity);
+    case 'scene':
+      return new Scene(entity);
+    case 'camera':
+      return new Camera(entity);
+    case 'input_boolean':
+      return new InputBoolean(entity);
+    case 'input_number':
+      return new InputNumber(entity);
+    case 'input_select':
+      return new InputSelect(entity);
+    case 'script':
+      return new Script(entity);
     default:
+      // Weather/person entities match by domain string
+      if (entity.entityId.startsWith('weather.')) return new Weather(entity);
+      if (entity.entityId.startsWith('person.')) return new Person(entity);
       return new Sensor(entity); // Generic fallback
   }
 }

@@ -75,6 +75,18 @@ export interface RecorderEvents {
     template: GestureTemplate;
     duration: number;
   };
+  /**
+   * Quality feedback emitted after each recording completion.
+   * Compares the latest rep against existing templates.
+   */
+  repQuality: {
+    /** Repetition index. */
+    index: number;
+    /** Consistency score of this rep against existing templates (0.0–1.0). */
+    score: number;
+    /** Whether the score meets the minimum consistency threshold. */
+    isAcceptable: boolean;
+  };
   /** All recordings finished, consistency computed. */
   sessionCompleted: {
     session: RecordingSession;
@@ -328,6 +340,16 @@ export class GestureRecorder extends EventEmitter<RecorderEvents> {
       template,
       duration: template.duration,
     });
+
+    // Emit per-rep quality feedback if we have at least 2 templates
+    if (this.recordedTemplates.length >= 2) {
+      const consistency = this.dtw.computeConsistency(this.recordedTemplates);
+      this.emit('repQuality', {
+        index: this.currentRepIndex,
+        score: consistency,
+        isAcceptable: consistency >= this.config.minConsistency,
+      });
+    }
 
     this.currentRepIndex++;
     this.proceedAfterRecording();

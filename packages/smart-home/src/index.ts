@@ -54,6 +54,14 @@ export {
   useHistory,
   useMQTT,
   useMQTTSubscription,
+  useScenes,
+  useWeather,
+  useConnectionHealth,
+} from './hooks';
+export type {
+  UseScenesResult,
+  UseWeatherResult,
+  UseConnectionHealthResult,
 } from './hooks';
 
 // ─── Device abstractions ─────────────────────────────────────────────────────
@@ -69,6 +77,14 @@ export {
   AlarmPanel,
   Sensor,
   BinarySensor,
+  Scene,
+  Weather,
+  Camera,
+  Person,
+  InputBoolean,
+  InputNumber,
+  InputSelect,
+  Script,
   createDevice,
 } from './devices';
 
@@ -127,6 +143,18 @@ export {
   activateScene,
   triggerAutomation,
   runScript,
+  // Notifications
+  notificationSend,
+  persistentNotificationCreate,
+  persistentNotificationDismiss,
+  // Input helpers
+  inputBooleanToggle,
+  inputBooleanTurnOn,
+  inputBooleanTurnOff,
+  inputNumberSetValue,
+  inputSelectSelectOption,
+  // Script (with variables)
+  scriptTurnOn,
 } from './utils/service-calls';
 export type { LightTurnOnOptions, HvacMode } from './utils/service-calls';
 
@@ -148,6 +176,10 @@ export {
   filterByArea,
   groupByDomain,
   groupByArea,
+  formatEntityState,
+  isEntityAvailable,
+  getLastChanged,
+  getLastUpdated,
 } from './utils/entities';
 
 export { EventEmitter } from './utils/event-emitter';

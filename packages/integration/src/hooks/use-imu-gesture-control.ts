@@ -26,6 +26,7 @@ const DEFAULT_PIPELINE_STATUS: IMUPipelineStatus = {
   isDeviceConnected: false,
   totalSamplesForwarded: 0,
   lastError: null,
+  lastSampleLatencyMs: null,
 };
 
 const DEFAULT_BRIDGE_STATUS: GestureActionBridgeStatus = {
@@ -33,6 +34,8 @@ const DEFAULT_BRIDGE_STATUS: GestureActionBridgeStatus = {
   actionsSkipped: 0,
   lastActionTimestamp: null,
   lastGestureId: null,
+  recentActions: [],
+  lastActionExecutionMs: null,
 };
 
 export function useIMUGestureControl(

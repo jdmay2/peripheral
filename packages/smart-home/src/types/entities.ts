@@ -29,7 +29,9 @@ export type EntityDomain =
   | 'select'
   | 'button'
   | 'humidifier'
-  | 'water_heater';
+  | 'water_heater'
+  | 'person'
+  | 'weather';
 
 // ─── Base entity ─────────────────────────────────────────────────────────────
 

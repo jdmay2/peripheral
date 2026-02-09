@@ -33,6 +33,7 @@ export function createIMUPipeline(
   let isPaused = false;
   let totalSamplesForwarded = 0;
   let lastError: Error | null = null;
+  let lastSampleLatencyMs: number | null = null;
   let destroyed = false;
 
   // ─── Notification handler ───────────────────────────────────────────────
@@ -43,11 +44,13 @@ export function createIMUPipeline(
     if (!uuidsMatch(notif.characteristicUUID, characteristicUUID)) return;
 
     try {
-      const timestamp = Date.now();
+      const notifReceived = Date.now();
+      const timestamp = notifReceived;
       const samples = parser(notif.value, timestamp);
       if (samples.length > 0) {
         engine.feedSamples(samples);
         totalSamplesForwarded += samples.length;
+        lastSampleLatencyMs = Date.now() - notifReceived;
       }
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
@@ -141,6 +144,7 @@ export function createIMUPipeline(
       isDeviceConnected: manager.getDeviceState(deviceId) === ConnectionState.Ready,
       totalSamplesForwarded,
       lastError,
+      lastSampleLatencyMs,
     }),
   };
 }

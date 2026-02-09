@@ -457,6 +457,36 @@ export class GestureEngine extends EventEmitter<GestureEngineEvents> {
     }
   }
 
+  /** Delete a specific template by index from a DTW gesture class. */
+  deleteTemplate(gestureId: string, index: number): void {
+    this.dtwClassifier.deleteTemplate(gestureId, index);
+    const cls = this.gestureClasses.get(gestureId);
+    if (cls) {
+      cls.templates.splice(index, 1);
+      cls.isReady = cls.templates.length >= cls.minTemplates;
+    }
+  }
+
+  /** Get all templates for a DTW gesture class. */
+  getTemplates(gestureId: string): GestureTemplate[] {
+    return this.dtwClassifier.getTemplates(gestureId);
+  }
+
+  /** Get the number of templates for a DTW gesture class. */
+  getTemplateCount(gestureId: string): number {
+    return this.dtwClassifier.getTemplateCount(gestureId);
+  }
+
+  /** Remove all templates for a gesture class without unregistering it. */
+  clearGesture(gestureId: string): void {
+    this.dtwClassifier.clearGesture(gestureId);
+    const cls = this.gestureClasses.get(gestureId);
+    if (cls) {
+      cls.templates = [];
+      cls.isReady = false;
+    }
+  }
+
   /** Get all registered gesture definitions. */
   getGestures(): GestureDefinition[] {
     return Array.from(this.gestureDefinitions.values());

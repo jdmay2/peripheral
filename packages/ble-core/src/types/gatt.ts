@@ -53,6 +53,11 @@ export const StandardCharacteristics = {
   SystemId: '2A23',
   PnPId: '2A50',
 
+  // Current Time
+  CurrentTime: '2A2B',
+  LocalTimeInformation: '2A0F',
+  ReferenceTimeInformation: '2A14',
+
   // Battery
   BatteryLevel: '2A19',
 

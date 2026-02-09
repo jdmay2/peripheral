@@ -12,6 +12,7 @@ const KNOWN_DOMAINS = new Set<EntityDomain>([
   'sensor', 'binary_sensor', 'camera', 'vacuum', 'alarm_control_panel',
   'automation', 'scene', 'script', 'input_boolean', 'input_number',
   'input_select', 'number', 'select', 'button', 'humidifier', 'water_heater',
+  'person', 'weather',
 ]);
 
 /**
@@ -159,4 +160,32 @@ export function groupByArea(
     groups[area].push(entity);
   }
   return groups;
+}
+
+// ─── Additional helpers ─────────────────────────────────────────────────────
+
+/**
+ * Format an entity state with its unit of measurement.
+ * E.g., "22.5 °C", "65 %", or "on" (if no unit).
+ */
+export function formatEntityState(entity: SmartHomeEntity): string {
+  const unit = entity.attributes.unit_of_measurement as string | undefined;
+  return unit ? `${entity.state} ${unit}` : entity.state;
+}
+
+/**
+ * Check if an entity is available (not "unavailable" or "unknown").
+ */
+export function isEntityAvailable(entity: SmartHomeEntity): boolean {
+  return entity.state !== 'unavailable' && entity.state !== 'unknown';
+}
+
+/** Parse the lastChanged ISO timestamp to a Date object. */
+export function getLastChanged(entity: SmartHomeEntity): Date {
+  return new Date(entity.lastChanged);
+}
+
+/** Parse the lastUpdated ISO timestamp to a Date object. */
+export function getLastUpdated(entity: SmartHomeEntity): Date {
+  return new Date(entity.lastUpdated);
 }
